@@ -96,6 +96,7 @@ Rectangle {
                 id: myCubeModel
                 x: 46.632
                 y: 63.271
+                visible: true
                 levelOfDetailBias: 81
                 z: 0
                 materials: defaultMaterial

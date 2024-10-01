@@ -1,12 +1,15 @@
 import QtQuick 2.15
 import QtQuick3D 6.7
+import MyInstancingModule
 
 Model {
     id: cubeModel
+
     x: 0
     y: 0
     z: 0
     source: "#Cube"
+    instancing: MyInstancing{}
         PropertyAnimation {
             id: propertyAnimation
             target: cubeModel

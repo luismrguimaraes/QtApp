@@ -8,6 +8,9 @@
 #include <QQmlComponent>
 #include <QQmlEngine>
 
+#include <QtGui>
+#include <QtQuick3D/qquick3d.h>
+
 #include "autogen/environment.h"
 
 int main(int argc, char *argv[])
