@@ -13,6 +13,7 @@ import QtQuick3D.Effects 6.7
 import DesignerProject
 
 Rectangle {
+    id: rectangle
     width: 1920
     height: 1080
     opacity: 1
@@ -117,14 +118,6 @@ Rectangle {
             baseColor: "#27d96a"
             objectName: "New Material"
         }
-    }
-
-    Text {
-        text: qsTr("Hello DesignerProject")
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: 100
-        font.family: Constants.font.family
     }
 }
 
