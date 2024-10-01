@@ -16,6 +16,10 @@ set(QML_IMPORT_PATH ${QT_QML_OUTPUT_DIRECTORY}
     FORCE
 )
 
+add_subdirectory(libs/rtaudio/)
+add_subdirectory(libs/rtmidi/)
+
+
 find_package(Qt6 6.7 REQUIRED COMPONENTS Core Gui Qml Quick Quick3D)
 qt_standard_project_setup()
 
@@ -30,10 +34,11 @@ qt_add_resources(${CMAKE_PROJECT_NAME} "configuration"
                 qtquickcontrols2.conf)
 
 qt_add_qml_module(${CMAKE_PROJECT_NAME}
-    URI MyInstancingModule
+    URI MyModule
     VERSION 1.0
     SOURCES
         ./myinstancing.cpp ./myinstancing.h
+        ./audiomidi.cpp ./audiomidi.h
     IMPORTS
         QtQuick3D
 )

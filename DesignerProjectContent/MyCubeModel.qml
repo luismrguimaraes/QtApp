@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtQuick3D 6.7
-import MyInstancingModule
+import MyModule
 
 Model {
     id: cubeModel
