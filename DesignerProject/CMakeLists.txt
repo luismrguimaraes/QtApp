@@ -14,9 +14,9 @@ qt6_add_qml_module(DesignerProject
     VERSION 1.0
     RESOURCE_PREFIX "/qt/qml"
 	QML_FILES
+		"Constants.qml"
 		"DirectoryFontLoader.qml"
 		"EventListSimulator.qml"
-		"Constants.qml"
 		"EventListModel.qml"
 )
 

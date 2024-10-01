@@ -9,9 +9,9 @@ qt6_add_qml_module(DesignerProjectContent
     VERSION 1.0
     RESOURCE_PREFIX "/qt/qml"
 	QML_FILES
-		"Screen01.ui.qml"
 		"MyCubeModel.qml"
 		"App.qml"
+		"Screen01.ui.qml"
 )
 
 

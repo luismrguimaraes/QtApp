@@ -3,7 +3,7 @@ import QtQuick3D 6.7
 
 Model {
     id: cubeModel
-    x: -1
+    x: 0
     y: 0
     z: 0
     source: "#Cube"
@@ -22,7 +22,6 @@ Model {
             id: __materialLibrary__
         }
     }
-
 /*##^##
 Designer {
     D{i:0;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}
