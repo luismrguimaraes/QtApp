@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QQmlEngine>
+#include <QtCore/qthread.h>
 
 class Audiomidi : public QObject
 {
@@ -14,6 +15,8 @@ public:
 public slots:
     void handleButtonClick(const double freq);
 
+protected:
+    QThread thread{};
 
 };
 #endif // AUDIOMIDI_H

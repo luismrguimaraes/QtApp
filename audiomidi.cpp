@@ -3,6 +3,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <math.h>
+#include <signal.h>
+
 #include "libs/rtaudio/RtAudio.h"
 #include "libs/rtmidi/RtMidi.h"
 
@@ -79,7 +81,7 @@ int sine( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
     return 0;
 }
 
-int fun(const double freq)
+int audioFun(const double freq)
 {
     RtAudio dac;
     std::vector<unsigned int> deviceIds = dac.getDeviceIds();
@@ -122,22 +124,71 @@ cleanup:
     return 0;
 }
 
+
+bool done;
+static void finish(int ignore){ done = true; }
+
+int midiFun (QThread * thread){
+    RtMidiIn *midiin = new RtMidiIn();
+    std::vector<unsigned char> message;
+    int nBytes, i;
+    double stamp;
+
+    // Check available ports.
+    unsigned int nPorts = midiin->getPortCount();
+    if ( nPorts == 0 ) {
+        std::cout << "No ports available!\n";
+        goto cleanup;
+    }
+    midiin->openPort( 0 );
+
+    // Don't ignore sysex, timing, or active sensing messages.
+    midiin->ignoreTypes( false, false, false );
+
+    // Install an interrupt handler function.
+    done = false;
+    (void) signal(SIGINT, finish);
+
+    // Periodically check input queue.
+    std::cout << "Reading MIDI from port ... quit with Ctrl-C.\n";
+    while ( !done ) {
+        stamp = midiin->getMessage( &message );
+        nBytes = message.size();
+        for ( i=0; i<nBytes; i++ ){
+            std::cout << "Byte " << i << " = " << (int)message[i] << ", ";
+
+            if (i == 0 && (int)message[i] == 144){
+                // Note On
+                auto freq = 440 * std::pow(2, ( - 69)/12)
+                thread->create(audioFun, 550)->start(QThread::HighPriority);
+            }
+            else if (i == 1 && (int)message[i] == 128){
+                // Note Off
+            }
+        }
+        if ( nBytes > 0 )
+            std::cout << "stamp = " << stamp << std::endl;
+
+        // Sleep for 10 milliseconds ... platform-dependent.
+        std::this_thread::sleep_for(std::chrono::milliseconds( 10 ));
+    }
+
+// Clean up
+cleanup:
+    delete midiin;
+
+    return 0;
+}
+
+
 Audiomidi::Audiomidi(QObject *parent)
     : QObject{parent}
 {
-    try {
-        RtMidiIn midiin;
-    } catch (RtMidiError &error) {
-        // Handle the exception here
-        error.printMessage();
-    }
-}
-
-void Audiomidi::handleButtonClick(const double freq){
-    QThread thread{};
-    auto myThread = thread.create(fun, freq);
-
+    auto myThread = thread.create(midiFun, &thread);
     myThread->start(QThread::HighPriority);
 }
 
-
+void Audiomidi::handleButtonClick(const double freq){
+    auto myThread = thread.create(audioFun, freq);
+    myThread->start(QThread::HighPriority);
+}
