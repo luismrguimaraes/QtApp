@@ -76,8 +76,6 @@ int sine( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
         }
     }
 
-    std::cout << streamTime << std::endl;
-
     return 0;
 }
 
@@ -111,7 +109,7 @@ int fun(const double freq)
     }
 
     char input;
-    std::cout << "\nPlaying ... press <enter> to quit.\n" << std::endl;
+    std::cout << "\nPlaying \n" << std::endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
     // Block released ... stop the stream

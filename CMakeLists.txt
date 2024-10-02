@@ -21,8 +21,7 @@ add_subdirectory(libs/rtmidi/)
 
 find_package(Qt6 6.7 REQUIRED COMPONENTS Core Gui Qml Quick Quick3D)
 find_package(RtAudio REQUIRED)
-#set (RtMidi_DIR ${CMAKE_PROJECT_NAME}/libs/rtmidi/)
-#message(STATUS ${CMAKE_PROJECT_NAME}/libs/rtmidi/)
+set (RtMidi_DIR ${CMAKE_CURRENT_BINARY_DIR}/libs/rtmidi/)
 find_package(RtMidi REQUIRED)
 
 qt_standard_project_setup()
