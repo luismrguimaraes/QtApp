@@ -4,6 +4,11 @@
 #include <cstdlib>
 #include <math.h>
 #include "libs/rtaudio/RtAudio.h"
+#include "libs/rtmidi/RtMidi.h"
+
+#include <chrono>
+#include <thread>
+
 
 int SAMPLE_RATE = 44100;
 int N_CHANNELS = 2;
@@ -31,6 +36,8 @@ int saw( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
         }
     }
 
+
+
     return 0;
 }
 
@@ -40,7 +47,13 @@ int sine( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
     unsigned int i, j;
     double *buffer = (double *) outputBuffer;
     double *lastValues = (double *) userData;
-    double freq = 440;
+    double freq = lastValues[2];
+
+    double amp = 0.5;
+    double a = 0.01;
+    double h = 1;
+    double r = 0.5;
+
 
     if ( status )
         std::cout << "Stream underflow detected!" << std::endl;
@@ -50,15 +63,25 @@ int sine( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
         for ( j=0; j<N_CHANNELS; j++ ) {
             *buffer++ = lastValues[j];
 
-            lastValues[j] = 0.5 * std::sin(2 * M_PI * freq * (streamTime + (double)i/SAMPLE_RATE));
+            double t = streamTime + (double)i/SAMPLE_RATE;
+
+            if (t <= a)
+                lastValues[j] = amp * std::sin(2 * M_PI * freq * t) * t/a; // t/a is 1 when t == a
+            else if (t <= a + h)
+                lastValues[j] = amp * std::sin(2 * M_PI * freq * t); // hold
+            else if (t <= a + h + r)
+                lastValues[j] = amp * std::sin(2 * M_PI * freq * t) * ((a + h - t) / r + 1); // 1 when t == a + h, 0 when t == a + h + r
+            else
+                lastValues[j] = 0;  // 0 when t > a + t + r
         }
     }
-    std::cout << lastValues[0] << std::endl;
+
+    std::cout << streamTime << std::endl;
 
     return 0;
 }
 
-int fun()
+int fun(const double freq)
 {
     RtAudio dac;
     std::vector<unsigned int> deviceIds = dac.getDeviceIds();
@@ -73,7 +96,7 @@ int fun()
     parameters.firstChannel = 0;
     unsigned int sampleRate = SAMPLE_RATE;
     unsigned int bufferFrames = 256; // 256 sample frames
-    double data[2] = {0, 0};
+    double data[3] = {0, 0, freq};
 
     if ( dac.openStream( &parameters, NULL, RTAUDIO_FLOAT64, sampleRate,
                        &bufferFrames, &sine, (void *)&data ) ) {
@@ -89,7 +112,7 @@ int fun()
 
     char input;
     std::cout << "\nPlaying ... press <enter> to quit.\n" << std::endl;
-    while(true){}
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
     // Block released ... stop the stream
     if ( dac.isStreamRunning() )
@@ -104,11 +127,19 @@ cleanup:
 Audiomidi::Audiomidi(QObject *parent)
     : QObject{parent}
 {
+    try {
+        RtMidiIn midiin;
+    } catch (RtMidiError &error) {
+        // Handle the exception here
+        error.printMessage();
+    }
 }
 
-void Audiomidi::handleButtonClick(){
+void Audiomidi::handleButtonClick(const double freq){
     QThread thread{};
-    auto myThread = thread.create(fun);
+    auto myThread = thread.create(fun, freq);
 
-    myThread->start(QThread::TimeCriticalPriority);
+    myThread->start(QThread::HighPriority);
 }
+
+

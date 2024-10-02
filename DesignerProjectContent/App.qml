@@ -19,8 +19,14 @@ Window {
 
     Button {
         id: button
-        text: qsTr("Button")
-        onClicked: myObject.handleButtonClick()
+        text: qsTr("440Hz")
+        onClicked: myObject.handleButtonClick(440)
+    }
+    Button {
+        id: button2
+        text: qsTr("880Hz")
+        anchors.left: button.right
+        onClicked: myObject.handleButtonClick(880)
     }
 }
 

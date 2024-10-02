@@ -12,7 +12,7 @@ public:
     explicit Audiomidi(QObject *parent = nullptr);
 
 public slots:
-    void handleButtonClick();
+    void handleButtonClick(const double freq);
 
 
 };
