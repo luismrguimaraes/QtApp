@@ -3,16 +3,17 @@
 
 #include <QObject>
 #include <QQmlEngine>
-#include "libs/rtaudio/RtAudio.h"
 
-class audiomidi : public QObject
+class Audiomidi : public QObject
 {
     Q_OBJECT
     QML_ELEMENT
 public:
-    explicit audiomidi(QObject *parent = nullptr);
+    explicit Audiomidi(QObject *parent = nullptr);
 
-signals:
+public slots:
+    void handleButtonClick();
+
 
 };
 #endif // AUDIOMIDI_H

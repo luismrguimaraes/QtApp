@@ -4,6 +4,7 @@
 import QtQuick 6.7
 import QtQuick.Controls 6.7
 import DesignerProject
+import MyModule
 
 Window {
     width: mainScreen.width
@@ -14,6 +15,12 @@ Window {
 
     Screen01 {
         id: mainScreen
+    }
+
+    Button {
+        id: button
+        text: qsTr("Button")
+        onClicked: myObject.handleButtonClick()
     }
 }
 

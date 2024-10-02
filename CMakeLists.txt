@@ -21,6 +21,7 @@ add_subdirectory(libs/rtmidi/)
 
 
 find_package(Qt6 6.7 REQUIRED COMPONENTS Core Gui Qml Quick Quick3D)
+find_package(RtAudio REQUIRED)
 qt_standard_project_setup()
 
 
@@ -36,6 +37,7 @@ qt_add_resources(${CMAKE_PROJECT_NAME} "configuration"
 qt_add_qml_module(${CMAKE_PROJECT_NAME}
     URI MyModule
     VERSION 1.0
+    RESOURCE_PREFIX "/qt/qml"
     SOURCES
         ./myinstancing.cpp ./myinstancing.h
         ./audiomidi.cpp ./audiomidi.h

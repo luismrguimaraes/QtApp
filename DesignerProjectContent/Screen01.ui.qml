@@ -92,6 +92,13 @@ Rectangle {
                 z: 7.60921
                 materials: newMaterial
             }
+
+            MyCubeModel {
+                id: myCubeModel
+                y: 79.205
+                z: 0
+                materials: defaultMaterial
+            }
         }
     }
 
@@ -108,11 +115,6 @@ Rectangle {
             baseColor: "#27d96a"
             objectName: "New Material"
         }
-    }
-
-    Button {
-        id: button
-        text: qsTr("Button")
     }
 }
 

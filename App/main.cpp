@@ -12,6 +12,7 @@
 #include <QtQuick3D/qquick3d.h>
 
 #include "autogen/environment.h"
+#include "audiomidi.h"
 
 int main(int argc, char *argv[])
 {
@@ -19,6 +20,10 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
+
+    Audiomidi myObject;
+    engine.rootContext()->setContextProperty("myObject", &myObject);
+
     const QUrl url(mainQmlFile);
     QObject::connect(
                 &engine, &QQmlApplicationEngine::objectCreated, &app,
