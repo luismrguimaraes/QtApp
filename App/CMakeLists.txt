@@ -9,6 +9,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Quick3D
     Qt${QT_VERSION_MAJOR}::Qml
     rtaudio
-    rtmidi)
+    rtmidi
+    QMidi)
 
 

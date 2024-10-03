@@ -8,6 +8,7 @@
 
 #include "libs/rtaudio/RtAudio.h"
 #include "libs/rtmidi/RtMidi.h"
+#include "libs/QMidi/src/QMidiFile.h"
 
 int SAMPLE_RATE = 44100;
 int N_CHANNELS = 2;
@@ -217,4 +218,11 @@ Audiomidi::Audiomidi(QObject *parent)
 {
     auto myThread = midiThread.create(midiFun, &audioThread);
     myThread->start(QThread::HighPriority);
+
+    QMidiFile* midi_file = new QMidiFile();
+    midi_file->load(":/test.mid");
+    for (qsizetype i = 0; i < midi_file->events().size(); ++i) {
+        std::cout << i << std::endl;
+        std::cout << midi_file->events().at(i)->message() << std::endl;
+    }
 }

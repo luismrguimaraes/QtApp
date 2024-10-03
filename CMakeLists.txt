@@ -6,7 +6,7 @@ option(BUILD_QDS_COMPONENTS "Build design studio components" ON)
 
 project(DesignerProjectApp LANGUAGES CXX)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_BINARY_DIR}/libs/QMidi/CMakeFiles/")
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -18,6 +18,7 @@ set(QML_IMPORT_PATH ${QT_QML_OUTPUT_DIRECTORY}
 
 add_subdirectory(libs/rtaudio/)
 add_subdirectory(libs/rtmidi/)
+add_subdirectory(libs/QMidi/)
 
 find_package(Qt6 6.7 REQUIRED COMPONENTS Core Gui Qml Quick Quick3D)
 find_package(RtAudio REQUIRED)
@@ -34,7 +35,8 @@ qt_add_executable(${CMAKE_PROJECT_NAME}
 qt_add_resources(${CMAKE_PROJECT_NAME} "configuration"
     PREFIX "/"
     FILES
-                qtquickcontrols2.conf)
+        test.mid
+        qtquickcontrols2.conf)
 
 qt_add_qml_module(${CMAKE_PROJECT_NAME}
     URI MyModule

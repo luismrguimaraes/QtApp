@@ -4,3 +4,6 @@
 [submodule "libs/rtaudio"]
 	path = libs/rtaudio
 	url = https://github.com/thestk/rtaudio
+[submodule "libs/QMidi"]
+	path = libs/QMidi
+	url = https://github.com/waddlesplash/QMidi.git
