@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <math.h>
 #include <signal.h>
+#include <map>
 
 #include "libs/rtaudio/RtAudio.h"
 #include "libs/rtmidi/RtMidi.h"
@@ -11,10 +12,20 @@
 #include <chrono>
 #include <thread>
 
-
 int SAMPLE_RATE = 44100;
 int N_CHANNELS = 2;
+auto AUDIO_PRIORITY = QThread::HighestPriority;
 
+std::atomic<bool> flag(false);
+std::map<int, std::atomic<bool>> noteOnDictionary;
+
+
+int freqToMidi(double freq){
+    return (int) ( ( 12 * log(freq / 220.0) / log(2.0) ) + 57.01 );
+}
+double midiToFreq (int n){
+    return 440 * std::pow(2, (n - 69.0)/12.0);
+}
 
 // Two-channel sawtooth wave generator.
 int saw( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
@@ -128,7 +139,7 @@ cleanup:
 bool done;
 static void finish(int ignore){ done = true; }
 
-int midiFun (QThread * thread){
+int midiFun (QThread * audioThread){
     RtMidiIn *midiin = new RtMidiIn();
     std::vector<unsigned char> message;
     int nBytes, i;
@@ -150,27 +161,40 @@ int midiFun (QThread * thread){
     (void) signal(SIGINT, finish);
 
     // Periodically check input queue.
-    std::cout << "Reading MIDI from port ... quit with Ctrl-C.\n";
     while ( !done ) {
         stamp = midiin->getMessage( &message );
         nBytes = message.size();
+
+        if (nBytes >2){
+            if ( (int)message[0] == 144 ){
+                // Note On
+                auto n = (int)message[1];
+                auto freq = midiToFreq(n);
+
+                //thread->create(audioFun,freq)->start();
+                auto myThread = audioThread->create(audioFun, freq);
+                myThread->start(AUDIO_PRIORITY);
+                noteOnDictionary.insert(std::make_pair(n, true));
+            }
+            else if ( (int)message[0] == 128 ){
+                // Note Off
+                auto n = (int)message[1];
+                if (noteOnDictionary.find(midiToFreq(n)) != noteOnDictionary.end()){
+                    noteOnDictionary.find(midiToFreq(n))->second.store(false);
+                }
+            }
+        }
+
         for ( i=0; i<nBytes; i++ ){
             std::cout << "Byte " << i << " = " << (int)message[i] << ", ";
 
-            if (i == 0 && (int)message[i] == 144){
-                // Note On
-                auto freq = 440 * std::pow(2, ( - 69)/12)
-                thread->create(audioFun, 550)->start(QThread::HighPriority);
-            }
-            else if (i == 1 && (int)message[i] == 128){
-                // Note Off
-            }
         }
         if ( nBytes > 0 )
             std::cout << "stamp = " << stamp << std::endl;
 
         // Sleep for 10 milliseconds ... platform-dependent.
-        std::this_thread::sleep_for(std::chrono::milliseconds( 10 ));
+        //std::this_thread::sleep_for(std::chrono::milliseconds( 10 ));
+        QThread::msleep(10);
     }
 
 // Clean up
@@ -184,11 +208,11 @@ cleanup:
 Audiomidi::Audiomidi(QObject *parent)
     : QObject{parent}
 {
-    auto myThread = thread.create(midiFun, &thread);
+    auto myThread = midiThread.create(midiFun, &audioThread);
     myThread->start(QThread::HighPriority);
 }
 
 void Audiomidi::handleButtonClick(const double freq){
-    auto myThread = thread.create(audioFun, freq);
-    myThread->start(QThread::HighPriority);
+    auto myThread = audioThread.create(audioFun, freq);
+    myThread->start(AUDIO_PRIORITY);
 }

@@ -16,7 +16,8 @@ public slots:
     void handleButtonClick(const double freq);
 
 protected:
-    QThread thread{};
+    QThread midiThread{};
+    QThread audioThread{};
 
 };
 #endif // AUDIOMIDI_H
