@@ -9,16 +9,13 @@
 #include "libs/rtaudio/RtAudio.h"
 #include "libs/rtmidi/RtMidi.h"
 
-#include <chrono>
-#include <thread>
-
 int SAMPLE_RATE = 44100;
 int N_CHANNELS = 2;
 auto AUDIO_PRIORITY = QThread::HighestPriority;
 
-std::atomic<bool> flag(false);
-std::map<int, std::atomic<bool>> noteOnDictionary;
 
+std::map<QThread *, std::pair<std::atomic<bool>, std::atomic<double>>> relTimeDic;
+std::map<int, QThread *> noteThreadDic;
 
 int freqToMidi(double freq){
     return (int) ( ( 12 * log(freq / 220.0) / log(2.0) ) + 57.01 );
@@ -27,46 +24,39 @@ double midiToFreq (int n){
     return 440 * std::pow(2, (n - 69.0)/12.0);
 }
 
-// Two-channel sawtooth wave generator.
-int saw( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
-        double streamTime, RtAudioStreamStatus status, void *userData )
-{
-    unsigned int i, j;
-    double *buffer = (double *) outputBuffer;
-    double *lastValues = (double *) userData;
-
-    if ( status )
-        std::cout << "Stream underflow detected!" << std::endl;
-
-    // Write interleaved audio data.
-    for ( i=0; i<nBufferFrames; i++ ) {
-        for ( j=0; j<2; j++ ) {
-            *buffer++ = lastValues[j];
-
-            //lastValues[j] += 0.005 * (j+1+(j*0.1));
-            lastValues[j] += 0.005;
-            if ( lastValues[j] >= 1.0 ) lastValues[j] -= 2.0;
-        }
-    }
-
-
-
-    return 0;
-}
+struct UserData{ // data structure passed to RtCallback
+    UserData(){}
+    double channelData[2] = {0, 0};
+    double freq = 0;
+    QThread * thread = nullptr;
+    bool isReleased = false;
+};
 
 int sine( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
-        double streamTime, RtAudioStreamStatus status, void *userData )
+        double streamTime, RtAudioStreamStatus status,  void * userDataArg )
 {
     unsigned int i, j;
     double *buffer = (double *) outputBuffer;
-    double *lastValues = (double *) userData;
-    double freq = lastValues[2];
+    UserData *userData = (UserData *) userDataArg;
+    double freq = userData->freq;
 
     double amp = 0.5;
-    double a = 0.01;
-    double h = 1;
-    double r = 0.5;
+    double a = 0.005;
+    double h = 0;
+    double r = 0.3;
 
+
+    bool isNoteReleased = true;
+    double relStartTime = -1;
+    if (relTimeDic.find(userData->thread) == relTimeDic.end() ){
+        std::cout << "Not finding the thread" << std::endl;
+    }
+    else{
+        isNoteReleased = relTimeDic.find(userData->thread)->second.first.load();
+        relStartTime = relTimeDic.find(userData->thread)->second.second.load();
+    }
+    if (relStartTime < a + h)
+        relStartTime = a + h;
 
     if ( status )
         std::cout << "Stream underflow detected!" << std::endl;
@@ -74,18 +64,22 @@ int sine( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
     // Write interleaved audio data.
     for ( i=0; i<nBufferFrames; i++ ) {
         for ( j=0; j<N_CHANNELS; j++ ) {
-            *buffer++ = lastValues[j];
+            *buffer++ = userData->channelData[j];
 
             double t = streamTime + (double)i/SAMPLE_RATE;
 
             if (t <= a)
-                lastValues[j] = amp * std::sin(2 * M_PI * freq * t) * t/a; // t/a is 1 when t == a
-            else if (t <= a + h)
-                lastValues[j] = amp * std::sin(2 * M_PI * freq * t); // hold
-            else if (t <= a + h + r)
-                lastValues[j] = amp * std::sin(2 * M_PI * freq * t) * ((a + h - t) / r + 1); // 1 when t == a + h, 0 when t == a + h + r
-            else
-                lastValues[j] = 0;  // 0 when t > a + t + r
+                userData->channelData[j] = amp * std::sin(2 * M_PI * freq * t) * t/a; // t/a is 1 when t == a
+            else if (t <= a + h || !isNoteReleased)
+                userData->channelData[j] = amp * std::sin(2 * M_PI * freq * t); // hold/sustain
+            else if (isNoteReleased && t <= relStartTime + r){
+                userData->channelData[j] = amp * std::sin(2 * M_PI * freq * t) * ((relStartTime - t) / r + 1); // 1 when t == a + h, 0 when t == a + h + r
+            }
+            else{
+                userData->channelData[j] = 0;  // 0 when t > a + t + r
+                userData->isReleased = true;
+
+            }
         }
     }
 
@@ -107,7 +101,10 @@ int audioFun(const double freq)
     parameters.firstChannel = 0;
     unsigned int sampleRate = SAMPLE_RATE;
     unsigned int bufferFrames = 256; // 256 sample frames
-    double data[3] = {0, 0, freq};
+
+    UserData data{};
+    data.freq = freq;
+    data.thread = QThread::currentThread();
 
     if ( dac.openStream( &parameters, NULL, RTAUDIO_FLOAT64, sampleRate,
                        &bufferFrames, &sine, (void *)&data ) ) {
@@ -123,7 +120,10 @@ int audioFun(const double freq)
 
     char input;
     std::cout << "\nPlaying \n" << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+    while (!data.isReleased)
+        QThread::msleep(2000);
+
+    std::cout << "releasing thread" << std::endl;
 
     // Block released ... stop the stream
     if ( dac.isStreamRunning() )
@@ -171,17 +171,24 @@ int midiFun (QThread * audioThread){
                 auto n = (int)message[1];
                 auto freq = midiToFreq(n);
 
-                //thread->create(audioFun,freq)->start();
-                auto myThread = audioThread->create(audioFun, freq);
-                myThread->start(AUDIO_PRIORITY);
-                noteOnDictionary.insert(std::make_pair(n, true));
+                auto newThread = audioThread->create(audioFun, freq);
+                auto currentTimeSec = QTime::currentTime().msec()/1000.0 + QTime::currentTime().second();
+                relTimeDic.insert(std::make_pair(newThread, std::make_pair(false, currentTimeSec)));
+                noteThreadDic.insert(std::pair(n, newThread));
+                newThread->start(AUDIO_PRIORITY);
             }
             else if ( (int)message[0] == 128 ){
                 // Note Off
                 auto n = (int)message[1];
-                if (noteOnDictionary.find(midiToFreq(n)) != noteOnDictionary.end()){
-                    noteOnDictionary.find(midiToFreq(n))->second.store(false);
-                }
+                QThread* thread = noteThreadDic.find(n)->second;
+
+                auto currentTimeSec = QTime::currentTime().msec()/1000.0 + QTime::currentTime().second();
+                auto relStartTime = currentTimeSec - relTimeDic.find(thread)->second.second.load();
+
+                relTimeDic.find(thread)->second.first.store(true);
+                relTimeDic.find(thread)->second.second.store(relStartTime);
+
+                noteThreadDic.erase(n);
             }
         }
 
@@ -210,9 +217,4 @@ Audiomidi::Audiomidi(QObject *parent)
 {
     auto myThread = midiThread.create(midiFun, &audioThread);
     myThread->start(QThread::HighPriority);
-}
-
-void Audiomidi::handleButtonClick(const double freq){
-    auto myThread = audioThread.create(audioFun, freq);
-    myThread->start(AUDIO_PRIORITY);
 }

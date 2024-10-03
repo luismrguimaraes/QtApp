@@ -12,9 +12,6 @@ class Audiomidi : public QObject
 public:
     explicit Audiomidi(QObject *parent = nullptr);
 
-public slots:
-    void handleButtonClick(const double freq);
-
 protected:
     QThread midiThread{};
     QThread audioThread{};
