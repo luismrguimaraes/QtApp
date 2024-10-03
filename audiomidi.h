@@ -11,6 +11,8 @@ class Audiomidi : public QObject
     QML_ELEMENT
 public:
     explicit Audiomidi(QObject *parent = nullptr);
+public:
+    struct VoiceManager;
 
 public slots:
     void handleButtonClick(const double freq);

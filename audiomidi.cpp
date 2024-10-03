@@ -15,10 +15,14 @@
 int SAMPLE_RATE = 44100;
 int N_CHANNELS = 2;
 auto AUDIO_PRIORITY = QThread::HighestPriority;
+int VOICES_MAX= 16;
 
-std::atomic<bool> flag(false);
-std::map<int, std::atomic<bool>> noteOnDictionary;
 
+// release time dictionary:  Thread, (isReleased, release time)
+std::map<QThread *, std::pair< std::atomic<bool>, std::atomic<double> >> relTimeDic;
+std::map<int, QThread *> noteThreadDic;
+
+Audiomidi::VoiceManager voiceManager{};
 
 int freqToMidi(double freq){
     return (int) ( ( 12 * log(freq / 220.0) / log(2.0) ) + 57.01 );
@@ -67,6 +71,13 @@ int sine( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
     double h = 1;
     double r = 0.5;
 
+    ///std::cout << noteThreadDic.find(freqToMidi(freq))->second << std::endl;
+    //if (relTimeDic.find(QThread::currentThread()) == relTimeDic.end())
+    //    std::cout << "Not found" << std::endl;
+    bool isReleased = false;// relTimeDic.find(QThread::currentThread())->second.first.load();
+
+    //std::cout << isReleased << std::endl;
+
 
     if ( status )
         std::cout << "Stream underflow detected!" << std::endl;
@@ -82,17 +93,24 @@ int sine( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
                 lastValues[j] = amp * std::sin(2 * M_PI * freq * t) * t/a; // t/a is 1 when t == a
             else if (t <= a + h)
                 lastValues[j] = amp * std::sin(2 * M_PI * freq * t); // hold
-            else if (t <= a + h + r)
-                lastValues[j] = amp * std::sin(2 * M_PI * freq * t) * ((a + h - t) / r + 1); // 1 when t == a + h, 0 when t == a + h + r
+            else if (!isReleased){
+                lastValues[j] = amp * std::sin(2 * M_PI * freq * t); // sustain
+            }
+            else if (isReleased){
+                auto relTime = relTimeDic.find(QThread::currentThread())->second.second.load();
+                auto mul = ((relTime - t) / r + 1);
+                if (mul < 0) mul = 0;
+                lastValues[j] = amp * std::sin(2 * M_PI * freq * t) * mul; // release
+            }
             else
-                lastValues[j] = 0;  // 0 when t > a + t + r
+                lastValues[j] = 0;
         }
     }
 
     return 0;
 }
 
-int audioFun(const double freq)
+int audioFun(const double freq, const int voiceID)
 {
     RtAudio dac;
     std::vector<unsigned int> deviceIds = dac.getDeviceIds();
@@ -107,7 +125,7 @@ int audioFun(const double freq)
     parameters.firstChannel = 0;
     unsigned int sampleRate = SAMPLE_RATE;
     unsigned int bufferFrames = 256; // 256 sample frames
-    double data[3] = {0, 0, freq};
+    double data[4] = {0, 0, freq, (double)voiceID};
 
     if ( dac.openStream( &parameters, NULL, RTAUDIO_FLOAT64, sampleRate,
                        &bufferFrames, &sine, (void *)&data ) ) {
@@ -171,16 +189,29 @@ int midiFun (QThread * audioThread){
                 auto n = (int)message[1];
                 auto freq = midiToFreq(n);
 
-                //thread->create(audioFun,freq)->start();
                 auto myThread = audioThread->create(audioFun, freq);
                 myThread->start(AUDIO_PRIORITY);
-                noteOnDictionary.insert(std::make_pair(n, true));
+
+                auto currentTimeSec = QTime::currentTime().msec()/1000.0 + QTime::currentTime().second();
+
+                std::cout << "inserting" << std::endl;
+                relTimeDic.insert(std::make_pair(myThread, std::make_pair(false, currentTimeSec)));
+                voiceManager.addVoice(myThread);
+
+                std::cout << myThread << std::endl;
             }
             else if ( (int)message[0] == 128 ){
                 // Note Off
                 auto n = (int)message[1];
-                if (noteOnDictionary.find(midiToFreq(n)) != noteOnDictionary.end()){
-                    noteOnDictionary.find(midiToFreq(n))->second.store(false);
+                QThread* thread = noteThreadDic.find(n)->second;
+
+                if (relTimeDic.find(thread) != relTimeDic.end()){
+
+                    auto currentTimeSec = QTime::currentTime().msec()/1000.0 + QTime::currentTime().second();
+                    auto relTime = currentTimeSec - relTimeDic.find(thread)->second.second.load();
+
+                    relTimeDic.find(thread)->second.first.store(true); //was released
+                    relTimeDic.find(thread)->second.second.store(relTime); // release time
                 }
             }
         }
@@ -205,6 +236,63 @@ cleanup:
 }
 
 
+struct Audiomidi::VoiceManager{
+    VoiceManager(QThread * audioThreadArg){
+        nextVoiceID = 0;
+        nVoices = 0;
+        audioThread = audioThreadArg;
+        for (int i=0;i<VOICES_MAX;i++){
+            voiceThreadDic.insert(std::make_pair(i, nullptr));
+        }
+    };
+public:
+    int nVoices;
+    int nextVoiceID;
+    QThread * audioThread;
+    std::map<int, QThread *> voiceThreadDic;
+
+    int newVoice(double freq){
+        if (nextVoiceID == -1)
+            return -1;
+
+        int idToReturn = nextVoiceID;
+        auto newThread = audioThread.create(audioFun, freq);
+        voiceThreadDic.find(nextVoiceID)->second = audioThread;
+        updateVars();
+        return nextVoiceID;
+    }
+    int removeVoice(int voiceID){
+        if (voiceThreadDic.find(voiceID) == voiceThreadDic.end())
+            return -1;
+
+        voiceThreadDic.find(voiceID)->second = nullptr;
+        return 0;
+    }
+
+    void updateVars(){
+        updateNextVoiceID();
+        updateNVoices();
+    }
+
+    void updateNextVoiceID(){
+        for (int i=0;i<VOICES_MAX;i++){
+            if (voiceThreadDic.find(i)->second == nullptr){
+                nextVoiceID = i;
+                return;
+            }
+        }
+        nextVoiceID = -1;
+    }
+    void updateNVoices(){
+        nVoices = 0;
+        for (int i=0;i<VOICES_MAX;i++){
+            if (voiceThreadDic.find(i)->second != nullptr){
+                nVoices++;
+            }
+        }
+    }
+};
+
 Audiomidi::Audiomidi(QObject *parent)
     : QObject{parent}
 {
@@ -213,6 +301,6 @@ Audiomidi::Audiomidi(QObject *parent)
 }
 
 void Audiomidi::handleButtonClick(const double freq){
-    auto myThread = audioThread.create(audioFun, freq);
+    auto myThread = voiceManager.newVoice();
     myThread->start(AUDIO_PRIORITY);
 }
