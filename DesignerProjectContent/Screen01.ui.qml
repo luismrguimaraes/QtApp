@@ -111,6 +111,20 @@ Rectangle {
                 z: 0
                 materials: defaultMaterial
             }
+
+            Item {
+                id: keyboard
+                width: 200
+                height: 200
+
+                WhiteNote {
+                    id: whiteNote
+                }
+
+                BlackNote {
+                    id: blackNote
+                }
+            }
         }
     }
 
@@ -127,6 +141,22 @@ Rectangle {
             baseColor: "#524e16"
             objectName: "New Material"
         }
+
+        PrincipledMaterial {
+            id: white
+            baseColor: "#ffe6b5"
+            roughness: 0.4
+            metalness: 0.1
+            objectName: "White"
+        }
+
+        PrincipledMaterial {
+            id: black1
+            baseColor: "#322e27"
+            roughness: 0.4
+            objectName: "Black"
+            metalness: 0.1
+        }
     }
 
     Slider {
@@ -142,7 +172,8 @@ Rectangle {
 
 /*##^##
 Designer {
-    D{i:0}D{i:1;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}D{i:2;invisible:true}D{i:3;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}
+    D{i:0;matPrevEnvDoc:"SkyBox";matPrevEnvValueDoc:"preview_studio"}D{i:1;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}
+D{i:2;invisible:true}D{i:3;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}D{i:17}
 }
 ##^##*/
 

@@ -12,6 +12,8 @@ qt6_add_qml_module(DesignerProjectContent
 		"App.qml"
 		"Screen01.ui.qml"
 		"MidiNoteModel.qml"
+		"WhiteNote.qml"
+		"BlackNote.qml"
 )
 
 
