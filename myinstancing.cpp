@@ -61,6 +61,14 @@ MyInstancing::~MyInstancing()
 {
 }
 
+bool MyInstancing::isBlackMidiNote(qint32 note) {
+    // Black notes in an octave (C#=1, D#=3, F#=6, G#=8, A#=10)
+    QSet<int> blackNotes = {1, 3, 6, 8, 10};
+
+    // MIDI note numbers repeat every 12 notes (one octave)
+    return blackNotes.find(note % 12) != blackNotes.end();
+}
+
 QByteArray MyInstancing::getInstanceBuffer(int *instanceCount)
 {
     if (m_dirty) {
@@ -85,7 +93,6 @@ QByteArray MyInstancing::getInstanceBuffer(int *instanceCount)
                     if (messages.at(j).status == 128 && messages.at(j).note == messages.at(i).note){
                         // note off
                         noteDurationInSecs = messages.at(j).eventTime/1000.0 - noteOnTimeInSecs;
-                        std::cout << noteDurationInSecs << std::endl;
                         break;
                     }
                 }
@@ -93,7 +100,14 @@ QByteArray MyInstancing::getInstanceBuffer(int *instanceCount)
                 float zScale = noteDurationInSecs / 2;
                 float zPos = noteOnTimeInSecs + noteDurationInSecs/2;
 
-                auto entry = calculateTableEntry({ -xPos*25, 0, zPos*50}, { 0.25, 0.5, zScale }, {}, Qt::white, {});
+                float xScale = 0.25;
+                QColor color = QColorConstants::White;
+                if (isBlackMidiNote(messages.at(i).note)){
+                    xScale *= 0.5;
+                    color = QColorConstants::DarkBlue;
+                }
+
+                auto entry = calculateTableEntry({ -xPos*25, 0, zPos*50}, { xScale, 0.5, zScale }, {}, color, {});
                 m_instanceData.append(reinterpret_cast<const char *>(&entry), sizeof(entry));
                 instanceNumber++;
             }

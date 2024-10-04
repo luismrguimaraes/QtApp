@@ -43,14 +43,29 @@ Rectangle {
             id: scene
             DirectionalLight {
                 id: directionalLight
-                x: -0
-                y: 276.706
+                x: 0
+                y: 0
                 opacity: 1
                 visible: true
-                brightness: 0.1
+                shadowFilter: 15
                 shadowFactor: 5
+                shadowMapQuality: Light.ShadowMapQualityMedium
+                eulerRotation.y: 207
                 castsShadow: true
+                eulerRotation.z: 0
+                eulerRotation.x: -36
+                brightness: 1
                 z: 0
+            }
+
+            PointLight {
+                id: pointLight
+                x: -0
+                y: 900
+                visible: false
+                brightness: 100
+                castsShadow: true
+                z: -600
             }
 
             PerspectiveCamera {
@@ -80,52 +95,20 @@ Rectangle {
             }
 
             Model {
-                id: cone
-                x: 0
-                y: 8.804
-                visible: true
-                source: "#Cone"
-                z: 0
-                materials: defaultMaterial
-            }
-
-            PointLight {
-                id: pointLight
-                x: -0
-                y: 900
-                brightness: 100
-                castsShadow: true
-                z: -600
-            }
-
-            Model {
                 id: plane
-                x: -88.194
-                y: -0.566
                 source: "#Rectangle"
-                pickable: true
-                receivesReflections: false
-                castsReflections: true
                 scale.z: 50
                 scale.y: 50
                 scale.x: 50
                 eulerRotation.x: -90
-                z: 7.60921
                 materials: newMaterial
             }
 
             MidiNoteModel {
-                id: myCubeModel
-                materials: defaultMaterial
-            }
-
-            Model {
-                id: cube
+                id: midiNoteModel
                 x: 0
-                source: "#Cube"
-                scale.z: 1
-                scale.y: 1
-                scale.x: 0.99812
+                y: 50
+                z: 0
                 materials: defaultMaterial
             }
         }
@@ -141,9 +124,19 @@ Rectangle {
 
         PrincipledMaterial {
             id: newMaterial
-            baseColor: "#2f2c09"
+            baseColor: "#524e16"
             objectName: "New Material"
         }
+    }
+
+    Slider {
+        id: sceneCameraYSlider
+        value: sceneCamera.y
+        live: true
+        to: 4000
+        from: 1
+        stepSize: 1
+        onValueChanged: sceneCamera.y = value
     }
 }
 

@@ -11,6 +11,7 @@ public:
     explicit MyInstancing(QQuick3DObject *parent = nullptr);
     ~MyInstancing() override;
     struct MIDIMessageStruct;
+    bool isBlackMidiNote(qint32);
 protected:
     QByteArray getInstanceBuffer(int *instanceCount) override;
 private:
