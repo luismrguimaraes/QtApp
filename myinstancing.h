@@ -10,6 +10,7 @@ class MyInstancing : public QQuick3DInstancing
 public:
     explicit MyInstancing(QQuick3DObject *parent = nullptr);
     ~MyInstancing() override;
+    struct MIDIMessageStruct;
 protected:
     QByteArray getInstanceBuffer(int *instanceCount) override;
 private:
@@ -17,5 +18,7 @@ private:
     bool m_dirty = true;
     QByteArray m_instanceData;
     float m_spacing = 20;
+    QList<MIDIMessageStruct> messages;
+
 };
 #endif // MYINSTANCING_H

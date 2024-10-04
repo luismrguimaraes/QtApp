@@ -10,8 +10,8 @@ qt6_add_qml_module(DesignerProjectContent
     RESOURCE_PREFIX "/qt/qml"
 	QML_FILES
 		"App.qml"
+		"MidiNoteModel.qml"
 		"Screen01.ui.qml"
-		"MyCubeModel.qml"
 )
 
 

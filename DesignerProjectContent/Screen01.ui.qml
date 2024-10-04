@@ -44,7 +44,11 @@ Rectangle {
             DirectionalLight {
                 id: directionalLight
                 x: -0
-                y: 168.706
+                y: 276.706
+                opacity: 1
+                visible: true
+                brightness: 0.1
+                shadowFactor: 5
                 castsShadow: true
                 z: 0
             }
@@ -52,29 +56,46 @@ Rectangle {
             PerspectiveCamera {
                 id: sceneCamera
                 x: -0
-                y: 139.967
-                eulerRotation.x: -20
+                y: 1500
+                visible: true
+                fieldOfViewOrientation: PerspectiveCamera.Horizontal
+                pivot.x: 0
+                pivot.z: 0
+                pivot.y: 0
+                fieldOfView: 60
+                clipFar: 10000
+                eulerRotation.x: -90
                 eulerRotation.z: 0
-                eulerRotation.y: 0
-                z: 280.354
+                eulerRotation.y: 180
+                z: -300
+            }
+
+            OrthographicCamera {
+                id: orthographicCamera
+                y: 1500
+                visible: true
+                eulerRotation.x: -55
+                eulerRotation.y: 180
+                z: -1000
             }
 
             Model {
                 id: cone
-                x: -129.312
+                x: 0
                 y: 8.804
                 visible: true
                 source: "#Cone"
-                z: -103.70641
+                z: 0
                 materials: defaultMaterial
             }
 
             PointLight {
                 id: pointLight
                 x: -0
-                y: 162.642
+                y: 900
+                brightness: 100
                 castsShadow: true
-                z: 100.99
+                z: -600
             }
 
             Model {
@@ -93,10 +114,18 @@ Rectangle {
                 materials: newMaterial
             }
 
-            MyCubeModel {
+            MidiNoteModel {
                 id: myCubeModel
-                y: 79.205
-                z: 0
+                materials: defaultMaterial
+            }
+
+            Model {
+                id: cube
+                x: 0
+                source: "#Cube"
+                scale.z: 1
+                scale.y: 1
+                scale.x: 0.99812
                 materials: defaultMaterial
             }
         }
@@ -106,13 +135,13 @@ Rectangle {
         id: __materialLibrary__
         PrincipledMaterial {
             id: defaultMaterial
-            baseColor: "#4554ee"
+            baseColor: "#4f5ce6"
             objectName: "Default Material"
         }
 
         PrincipledMaterial {
             id: newMaterial
-            baseColor: "#27d96a"
+            baseColor: "#2f2c09"
             objectName: "New Material"
         }
     }

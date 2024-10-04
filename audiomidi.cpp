@@ -10,7 +10,7 @@
 #include "libs/rtmidi/RtMidi.h"
 #include "libs/QMidi/src/QMidiFile.h"
 
-int SAMPLE_RATE = 44100;
+int SAMPLE_RATE = 48000;
 int N_CHANNELS = 2;
 auto AUDIO_PRIORITY = QThread::HighestPriority;
 
@@ -50,7 +50,7 @@ int sine( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
     bool isNoteReleased = true;
     double relStartTime = -1;
     if (relTimeDic.find(userData->thread) == relTimeDic.end() ){
-        std::cout << "Not finding the thread" << std::endl;
+        std::cout << "Not finding the thread (this is not supposed to happen)" << std::endl;
     }
     else{
         isNoteReleased = relTimeDic.find(userData->thread)->second.first.load();
@@ -119,11 +119,9 @@ int audioFun(const double freq)
         goto cleanup;
     }
 
-    char input;
     std::cout << "\nPlaying \n" << std::endl;
     while (!data.isReleased)
         QThread::msleep(2000);
-
     std::cout << "releasing thread" << std::endl;
 
     // Block released ... stop the stream
@@ -218,11 +216,4 @@ Audiomidi::Audiomidi(QObject *parent)
 {
     auto myThread = midiThread.create(midiFun, &audioThread);
     myThread->start(QThread::HighPriority);
-
-    QMidiFile* midi_file = new QMidiFile();
-    midi_file->load(":/test.mid");
-    for (qsizetype i = 0; i < midi_file->events().size(); ++i) {
-        std::cout << i << std::endl;
-        std::cout << midi_file->events().at(i)->message() << std::endl;
-    }
 }
