@@ -1,5 +1,6 @@
 #include "audiomidi.h"
 #include <QtCore/qthread.h>
+#include <QtQml/qqmlapplicationengine.h>
 #include <iostream>
 #include <cstdlib>
 #include <math.h>
@@ -71,7 +72,6 @@ int sine( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
             else{
                 userData->channelData[j] = 0;  // 0 when t > a + t + r
                 userData->isReleased = true;
-
             }
         }
     }
@@ -131,6 +131,7 @@ bool done;
 static void finish(int ignore){ done = true; }
 
 int midiFun (QThread * audioThread){
+
     RtMidiIn *midiin = new RtMidiIn();
     std::vector<unsigned char> message;
     int nBytes, i;
@@ -167,6 +168,12 @@ int midiFun (QThread * audioThread){
                 relTimeDic.insert(std::make_pair(newThread, std::make_pair(false, currentTimeSec)));
                 noteThreadDic.insert(std::pair(n, newThread));
                 newThread->start(AUDIO_PRIORITY);
+
+                // find note instance by checking its customData
+                // change property isPressed to true
+
+
+
             }
             else if ( (int)message[0] == 128 ){
                 // Note Off
@@ -180,6 +187,9 @@ int midiFun (QThread * audioThread){
                 relTimeDic.find(thread)->second.second.store(relStartTime);
 
                 noteThreadDic.erase(n);
+
+                // find note instance by checking its customData
+                // change property isPressed to false
             }
         }
 

@@ -92,11 +92,11 @@ QByteArray MyInstancing::getInstanceBuffer(int *instanceCount)
                 QColor color = QColorConstants::White;
                 if (utils::isBlackMidiNote(messages.at(i).note)){
                     xScale *= 0.5;
-                    color = QColorConstants::DarkBlue;
+                    color = QColorConstants::Black;
                 }
 
                 const QVector4D customData{static_cast<float>(messages.at(i).note),0,0,0};
-                auto entry = calculateTableEntry({ -xPos*25, 0, zPos*50}, { xScale, 0.5, zScale }, {}, color, customData);
+                auto entry = calculateTableEntry({ -xPos*25, 0, zPos*50}, { xScale, 0.25, zScale }, {}, color, customData);
                 m_instanceData.append(reinterpret_cast<const char *>(&entry), sizeof(entry));
                 instanceNumber++;
             }
@@ -107,6 +107,8 @@ QByteArray MyInstancing::getInstanceBuffer(int *instanceCount)
     }
     if (instanceCount)
         *instanceCount = m_instanceCount;
+
+    std::cout << m_instanceCount << std::endl;
 
     return m_instanceData;
 

@@ -50,10 +50,10 @@ Rectangle {
                 shadowFilter: 15
                 shadowFactor: 5
                 shadowMapQuality: Light.ShadowMapQualityMedium
-                eulerRotation.y: 207
+                eulerRotation.y: -131.88103
                 castsShadow: true
-                eulerRotation.z: 0
-                eulerRotation.x: -36
+                eulerRotation.z: -29.36037
+                eulerRotation.x: -62.56247
                 brightness: 1
                 z: 0
             }
@@ -79,7 +79,7 @@ Rectangle {
                 pivot.y: 0
                 fieldOfView: 60
                 clipFar: 10000
-                eulerRotation.x: -90
+                eulerRotation.x: -85
                 eulerRotation.z: 0
                 eulerRotation.y: 180
                 z: -300
@@ -108,7 +108,7 @@ Rectangle {
                 id: midiNoteModel
                 x: 0
                 y: 50
-                visible: false
+                visible: true
                 z: 0
                 materials: defaultMaterial
             }
@@ -130,7 +130,10 @@ Rectangle {
         id: __materialLibrary__
         PrincipledMaterial {
             id: defaultMaterial
-            baseColor: "#4f5ce6"
+            emissiveFactor.y: 0.11
+            emissiveFactor.z: 0.19
+            metalness: 0
+            baseColor: "#59ffeb"
             objectName: "Default Material"
         }
 
@@ -157,6 +160,13 @@ Rectangle {
         }
     }
 
+    Text{
+        id: camParamsText
+        text: qsTr("Camera Parameters")
+        font.pixelSize: 30
+        color: "white"
+    }
+
     Slider {
         id: sceneCameraYSlider
         value: sceneCamera.y
@@ -165,6 +175,45 @@ Rectangle {
         from: 1
         stepSize: 1
         onValueChanged: sceneCamera.y = value
+        anchors.top: camParamsText.bottom
+        Label{
+            anchors.left: sceneCameraYSlider.right
+            text: qsTr("Y")
+            font.pixelSize: 30
+            color: "white"
+        }
+    }
+    Slider {
+        id: sceneCameraXRotSlider
+        value: sceneCamera.eulerRotation.x
+        live: true
+        to: -70
+        from: -100
+        stepSize: 1
+        onValueChanged: sceneCamera.eulerRotation.x = value
+        anchors.top: sceneCameraYSlider.bottom
+        Label{
+            anchors.left: sceneCameraXRotSlider.right
+            text: qsTr("XRot")
+            font.pixelSize: 30
+            color: "white"
+        }
+    }
+    Slider {
+        id: sceneCameraZSlider
+        value: sceneCamera.z
+        live: true
+        to: -500
+        from: -100
+        stepSize: 1
+        onValueChanged: sceneCamera.z = value
+        anchors.top: sceneCameraXRotSlider.bottom
+        Label{
+            anchors.left: sceneCameraZSlider.right
+            text: qsTr("Z")
+            font.pixelSize: 30
+            color: "white"
+        }
     }
 }
 

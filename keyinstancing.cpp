@@ -42,17 +42,23 @@ QByteArray KeyboardInstancing::getInstanceBuffer(int *instanceCount)
 
             float zScale = 0.5;
             float zPos = -25;
-            float yPos = 50;
+            float yPos = 100;
             float xScale = 0.25;
             if (m_isWhiteNote){
                 zScale = 1;
                 zPos = -50;
-                yPos = 25;
+                yPos = 80;
                 xScale = 0.4;
             }
 
+            QColor color = Qt::white;
+            /*if (m_isPressed){
+                yPos -= 20;
+                color = Qt::green;
+            }*/
+
             const QVector4D customData{static_cast<float>(note),0,0,0};
-            auto entry = calculateTableEntry({ -xPos*25, yPos , zPos -600}, { xScale, 0.5, zScale }, {}, Qt::white, customData);
+            auto entry = calculateTableEntry({ -xPos*25, yPos , zPos -500}, { xScale, 1, zScale }, {}, color, customData);
             m_instanceData.append(reinterpret_cast<const char *>(&entry), sizeof(entry));
             instanceNumber++;
         }

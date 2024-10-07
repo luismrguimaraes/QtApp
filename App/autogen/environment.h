@@ -6,8 +6,8 @@
 #include <QGuiApplication>
 #include "qqmlextensionplugin.h"
 
-Q_IMPORT_QML_PLUGIN(DesignerProjectContentPlugin)
 Q_IMPORT_QML_PLUGIN(DesignerProjectPlugin)
+Q_IMPORT_QML_PLUGIN(DesignerProjectContentPlugin)
 
 const char mainQmlFile[] = "qrc:/qt/qml/DesignerProjectContent/App.qml";
 
