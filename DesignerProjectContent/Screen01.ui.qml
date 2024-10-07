@@ -108,22 +108,20 @@ Rectangle {
                 id: midiNoteModel
                 x: 0
                 y: 50
+                visible: false
                 z: 0
                 materials: defaultMaterial
             }
 
-            Item {
-                id: keyboard
-                width: 200
-                height: 200
+            WhiteNote {
+                id: whiteNote
+                visible: true
+                materials: white
+            }
 
-                WhiteNote {
-                    id: whiteNote
-                }
-
-                BlackNote {
-                    id: blackNote
-                }
+            BlackNote {
+                id: blackNote
+                materials: black
             }
         }
     }
@@ -151,7 +149,7 @@ Rectangle {
         }
 
         PrincipledMaterial {
-            id: black1
+            id: black
             baseColor: "#322e27"
             roughness: 0.4
             objectName: "Black"
@@ -173,7 +171,8 @@ Rectangle {
 /*##^##
 Designer {
     D{i:0;matPrevEnvDoc:"SkyBox";matPrevEnvValueDoc:"preview_studio"}D{i:1;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}
-D{i:2;invisible:true}D{i:3;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}D{i:17}
+D{i:2;invisible:true}D{i:3;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}D{i:10;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}
+D{i:11;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}
 }
 ##^##*/
 

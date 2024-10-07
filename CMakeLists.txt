@@ -45,6 +45,8 @@ qt_add_qml_module(${CMAKE_PROJECT_NAME}
     SOURCES
         ./myinstancing.cpp ./myinstancing.h
         ./audiomidi.cpp ./audiomidi.h
+        ./utils.h
+        ./keyinstancing.h ./keyinstancing.cpp
     IMPORTS
         QtQuick3D
 )

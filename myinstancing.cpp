@@ -1,8 +1,6 @@
 #include "./myinstancing.h"
 #include "libs/QMidi/src/QMidiFile.h"
 #include <QtCore/qthread.h>
-#include <QtQml/qqmlapplicationengine.h>
-#include <QtQml/qqmlcontext.h>
 #include <math.h>
 #include <QColor>
 #include <iostream>
@@ -61,20 +59,10 @@ MyInstancing::~MyInstancing()
 {
 }
 
-bool MyInstancing::isBlackMidiNote(qint32 note) {
-    // Black notes in an octave (C#=1, D#=3, F#=6, G#=8, A#=10)
-    QSet<int> blackNotes = {1, 3, 6, 8, 10};
-
-    // MIDI note numbers repeat every 12 notes (one octave)
-    return blackNotes.find(note % 12) != blackNotes.end();
-}
-
 QByteArray MyInstancing::getInstanceBuffer(int *instanceCount)
 {
     if (m_dirty) {
         m_instanceData.resize(0);
-
-        //auto idxToPos = [this](int i) -> float { return m_gridSpacing * (i - m_gridSize / 2); };
 
         int instanceNumber = 0;
 
@@ -102,18 +90,16 @@ QByteArray MyInstancing::getInstanceBuffer(int *instanceCount)
 
                 float xScale = 0.25;
                 QColor color = QColorConstants::White;
-                if (isBlackMidiNote(messages.at(i).note)){
+                if (utils::isBlackMidiNote(messages.at(i).note)){
                     xScale *= 0.5;
                     color = QColorConstants::DarkBlue;
                 }
 
-                auto entry = calculateTableEntry({ -xPos*25, 0, zPos*50}, { xScale, 0.5, zScale }, {}, color, {});
+                const QVector4D customData{static_cast<float>(messages.at(i).note),0,0,0};
+                auto entry = calculateTableEntry({ -xPos*25, 0, zPos*50}, { xScale, 0.5, zScale }, {}, color, customData);
                 m_instanceData.append(reinterpret_cast<const char *>(&entry), sizeof(entry));
                 instanceNumber++;
             }
-
-
-
         }
 
         m_instanceCount = instanceNumber;

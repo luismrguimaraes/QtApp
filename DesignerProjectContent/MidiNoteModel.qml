@@ -1,6 +1,6 @@
 import QtQuick 2.15
 import QtQuick3D 6.7
-//import MyModule
+import MyModule
 
 Model {
     id: midiNoteModel
@@ -13,11 +13,11 @@ Model {
         interval: 10; running: true; repeat: true
         onTriggered: midiNoteModel.z--
     }
-    //instancing: MyInstancing{}
-        Node {
-            id: __materialLibrary__
-        }
+    instancing: MyInstancing{}
+    Node {
+        id: __materialLibrary__
     }
+}
 /*##^##
 Designer {
     D{i:0;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}

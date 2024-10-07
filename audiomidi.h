@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QQmlEngine>
 #include <QtCore/qthread.h>
+#include <utils.h>
 
 class Audiomidi : public QObject
 {

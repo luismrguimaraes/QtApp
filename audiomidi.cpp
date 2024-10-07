@@ -8,7 +8,6 @@
 
 #include "libs/rtaudio/RtAudio.h"
 #include "libs/rtmidi/RtMidi.h"
-#include "libs/QMidi/src/QMidiFile.h"
 
 int SAMPLE_RATE = 48000;
 int N_CHANNELS = 2;
@@ -17,13 +16,6 @@ auto AUDIO_PRIORITY = QThread::HighestPriority;
 
 std::map<QThread *, std::pair<std::atomic<bool>, std::atomic<double>>> relTimeDic;
 std::map<int, QThread *> noteThreadDic;
-
-int freqToMidi(double freq){
-    return (int) ( ( 12 * log(freq / 220.0) / log(2.0) ) + 57.01 );
-}
-double midiToFreq (int n){
-    return 440 * std::pow(2, (n - 69.0)/12.0);
-}
 
 struct UserData{ // data structure passed to RtCallback
     UserData(){}
@@ -168,7 +160,7 @@ int midiFun (QThread * audioThread){
             if ( (int)message[0] == 144 ){
                 // Note On
                 auto n = (int)message[1];
-                auto freq = midiToFreq(n);
+                auto freq = utils::midiToFreq(n);
 
                 auto newThread = audioThread->create(audioFun, freq);
                 auto currentTimeSec = QTime::currentTime().msec()/1000.0 + QTime::currentTime().second();
