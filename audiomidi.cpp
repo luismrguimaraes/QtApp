@@ -1,5 +1,6 @@
 #include "audiomidi.h"
 #include <QtCore/qthread.h>
+#include <QQmlComponent>
 #include <QtQml/qqmlapplicationengine.h>
 #include <iostream>
 #include <cstdlib>
@@ -130,7 +131,7 @@ cleanup:
 bool done;
 static void finish(int ignore){ done = true; }
 
-int midiFun (QThread * audioThread){
+int midiFun (QThread * audioThread, QList<bool> * pressedNotesList, Audiomidi * audioMidiObject){
 
     RtMidiIn *midiin = new RtMidiIn();
     std::vector<unsigned char> message;
@@ -169,11 +170,8 @@ int midiFun (QThread * audioThread){
                 noteThreadDic.insert(std::pair(n, newThread));
                 newThread->start(AUDIO_PRIORITY);
 
-                // find note instance by checking its customData
-                // change property isPressed to true
-
-
-
+                pressedNotesList->replace(n, true);
+                emit audioMidiObject->pressedNotesListChanged();
             }
             else if ( (int)message[0] == 128 ){
                 // Note Off
@@ -188,8 +186,8 @@ int midiFun (QThread * audioThread){
 
                 noteThreadDic.erase(n);
 
-                // find note instance by checking its customData
-                // change property isPressed to false
+                pressedNotesList->replace(n, false);
+                emit audioMidiObject->pressedNotesListChanged();
             }
         }
 
@@ -213,9 +211,18 @@ cleanup:
 }
 
 
+void Audiomidi::debug(){
+    qDebug() << pressedNotesList ;
+}
+
 Audiomidi::Audiomidi(QObject *parent)
     : QObject{parent}
 {
-    auto myThread = midiThread.create(midiFun, &audioThread);
+    auto myThread = midiThread.create(midiFun, &audioThread, &pressedNotesList, this);
     myThread->start(QThread::HighPriority);
+
+    for (qsizetype i = 0; i < 128; ++i) {
+        pressedNotesList.append(false);
+    }
+
 }

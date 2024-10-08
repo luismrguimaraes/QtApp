@@ -1,17 +1,21 @@
 #include "keyinstancing.h"
+#include <QtQml/qqmlapplicationengine.h>
 #include <iostream>
 #include <ostream>
 
 KeyboardInstancing::KeyboardInstancing(){}
 
-KeyboardInstancing::KeyboardInstancing(bool isWhiteNoteArg){
-    m_isWhiteNote = isWhiteNoteArg;
-}
+//KeyboardInstancing::KeyboardInstancing(bool isWhiteNoteArg){
+//    m_isWhiteNote = isWhiteNoteArg;
+    //m_pressedNotesList = pressedNotesList;
+//}
 
 bool KeyboardInstancing::isWhiteNote() const{
     return m_isWhiteNote;
 }
-
+QList<bool> KeyboardInstancing::pressedNotesList() const{
+    return m_pressedNotesList;
+}
 
 void KeyboardInstancing::setIsWhiteNote(bool isWhiteNote)
 {
@@ -23,11 +27,18 @@ void KeyboardInstancing::setIsWhiteNote(bool isWhiteNote)
     markDirty();
     m_dirty = true;
 }
+void KeyboardInstancing::setPressedNotesList(QList<bool> pressedNotesList){
+    if (m_pressedNotesList == pressedNotesList)
+        return;
+
+    m_pressedNotesList = pressedNotesList;
+    emit pressedNotesListChanged();
+    markDirty();
+    m_dirty = true;
+}
 
 QByteArray KeyboardInstancing::getInstanceBuffer(int *instanceCount)
 {
-    std::cout << m_isWhiteNote << std::endl;
-
     if (m_dirty) {
         m_instanceData.resize(0);
 
@@ -52,10 +63,10 @@ QByteArray KeyboardInstancing::getInstanceBuffer(int *instanceCount)
             }
 
             QColor color = Qt::white;
-            /*if (m_isPressed){
+            if (m_pressedNotesList[note]){
                 yPos -= 20;
                 color = Qt::green;
-            }*/
+            }
 
             const QVector4D customData{static_cast<float>(note),0,0,0};
             auto entry = calculateTableEntry({ -xPos*25, yPos , zPos -500}, { xScale, 1, zScale }, {}, color, customData);

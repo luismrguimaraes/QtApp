@@ -16,5 +16,9 @@ Window {
     Screen01 {
         id: mainScreen
     }
+
+    Button{
+        onClicked: audioMidi.debug()
+    }
 }
 

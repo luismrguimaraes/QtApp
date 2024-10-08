@@ -21,8 +21,8 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    Audiomidi myObject;
-    engine.rootContext()->setContextProperty("myObject", &myObject);
+    Audiomidi audioMidi;
+    engine.rootContext()->setContextProperty("audioMidi", &audioMidi);
 
     const QUrl url(mainQmlFile);
     QObject::connect(

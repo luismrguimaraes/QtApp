@@ -97,13 +97,14 @@ Rectangle {
             Model {
                 id: plane
                 source: "#Rectangle"
-                scale.z: 50
-                scale.y: 50
-                scale.x: 50
+                scale.z: 60
+                scale.y: 60
+                scale.x: 60
                 eulerRotation.x: -90
                 materials: newMaterial
             }
 
+            /*
             MidiNoteModel {
                 id: midiNoteModel
                 x: 0
@@ -112,17 +113,18 @@ Rectangle {
                 z: 0
                 materials: defaultMaterial
             }
-
+            */
             WhiteNote {
-                id: whiteNote
+                id: whiteNotes
                 visible: true
                 materials: white
             }
 
             BlackNote {
-                id: blackNote
+                id: blackNotes
                 materials: black
             }
+
         }
     }
 

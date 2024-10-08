@@ -8,6 +8,7 @@ Model {
                     materials: white
                     instancing: KeyboardInstancing{
                         isWhiteNote: true
+                        pressedNotesList: audioMidi.pressedNotesList
                     }
                     Node {
                         id: __materialLibrary__
