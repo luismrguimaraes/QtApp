@@ -18,6 +18,7 @@ Window {
     }
 
     Button{
+        text: qsTr("Debug")
         onClicked: audioMidi.debug()
     }
 }

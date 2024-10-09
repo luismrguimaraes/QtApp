@@ -24,6 +24,8 @@ TriggerBody{
         onTriggered: midiNoteRigidbody.z--
     }
 
+    property int note: -1
+
     Model {
             id: midiNoteModel
 
