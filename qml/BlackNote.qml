@@ -21,21 +21,23 @@ StaticRigidBody {
 
     onIsPressedChanged: {
         isPressed ? blackNote.y = blackNote.y -15 : blackNote.y = blackNote.y + 15
+
+        if (isPressed){
+            if (noteActive) console.log("OKAY")
+            else console.log("not okay")
+        }
     }
 
-    onEnteredTriggerBody: body => {if (body.note === blackNote.note) noteActive = true}
-    onExitedTriggerBody:  body => {if (body.note === blackNote.note) noteActive = false}
+    onEnteredTriggerBody: body => {if (body.note === blackNote.note)
+                              noteActive = true}
+    onExitedTriggerBody:  body => {if (body.note === blackNote.note)
+                              noteActive = false}
 
     Model {
                     id: blackNoteModel
 
                     source: "#Cube"
                     materials: isPressed ? defaultMaterial : black
-
-                    //instancing: KeyboardInstancing{
-                    //    isWhiteNote: false
-                    //    pressedNotesList: audioMidi.pressedNotesList
-                    //}
                     Node {
                         id: __materialLibrary__
                     }

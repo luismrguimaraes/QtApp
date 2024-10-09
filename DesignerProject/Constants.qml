@@ -24,4 +24,8 @@ QtObject {
     property StudioApplication application: StudioApplication {
         fontPath: Qt.resolvedUrl("../../DesignerProjectContent/" + relativeFontDirectory)
     }
+
+    function test(){
+        console.log("test")
+    }
 }

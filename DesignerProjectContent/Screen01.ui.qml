@@ -12,6 +12,7 @@ import QtQuick3D 6.7
 import QtQuick3D.Effects 6.7
 import DesignerProject
 import QtQuick3D.Physics
+import MyModule
 
 Rectangle {
     id: rectangle
@@ -110,8 +111,8 @@ Rectangle {
             }
 
 
-            MidiNoteModel {
-                id: midiNotes
+            MidiNotesInstancer {
+                id: sceneMidiNotesInstancer
                 x: 0
                 y: 50
                 visible: true
@@ -223,6 +224,18 @@ Rectangle {
             font.pixelSize: 30
             color: "white"
         }
+    }
+    TextField {
+        id: textField
+        placeholderText: qsTr("path")
+        text: "test.mid"
+        anchors.right: rectangle.right
+    }
+    Button{
+        anchors.top: textField.bottom
+        anchors.right: rectangle.right
+        text: qsTr("Spawn")
+        onClicked: sceneMidiNotesInstancer.readFile(":/" + textField.text)
     }
 }
 

@@ -5,19 +5,6 @@
 #include <QColor>
 #include <iostream>
 
-struct MyInstancing::MIDIMessageStruct{
-    MIDIMessageStruct(qint64 eventTimeArg, qint32 noteArg, qint32 statusArg){
-        eventTime = eventTimeArg;
-        note = noteArg;
-        status = statusArg;
-    }
-    ~MIDIMessageStruct(){};
-
-    qint64 eventTime;
-    qint32 note;
-    qint32 status;
-};
-
 MyInstancing::MyInstancing(QQuick3DObject *parent) : QQuick3DInstancing(parent)
 {
     QMidiFile* midi_file = new QMidiFile();

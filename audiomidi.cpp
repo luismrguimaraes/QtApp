@@ -10,6 +10,7 @@
 
 #include "libs/rtaudio/RtAudio.h"
 #include "libs/rtmidi/RtMidi.h"
+#include "libs/QMidi/src/QMidiFile.h"
 
 int SAMPLE_RATE = 48000;
 int N_CHANNELS = 2;
@@ -225,4 +226,90 @@ Audiomidi::Audiomidi(QObject *parent)
         pressedNotesList.append(false);
     }
 
+    //readMidiData(":/test.mid");
+
+}
+Audiomidi::~Audiomidi()
+{
+}
+
+void Audiomidi::readMidiData (QString path){
+    midiMessages.clear();
+
+    QMidiFile* midi_file = new QMidiFile();
+    std::cout << "Reading MIDI file " << path.toStdString() << std::endl;
+    midi_file->load(path);
+
+    QList<QMidiEvent*> events = midi_file->events();
+    for (QMidiEvent* e : events) {
+        if (e->type() != QMidiEvent::Meta) {
+            qint64 eventTime = midi_file->timeFromTick(e->tick()) *1000;
+
+            if (e->type() != QMidiEvent::SysEx) {
+                qint32 message = e->message();
+
+                qint32 status = message & 0x0000F0;
+                qint32 channel = message & 0x00000F;
+
+                if (status == 144 && channel == 0){
+                    // note on
+                    qint32 note = (message & 0x00FF00) >> 8;
+                    //qint32 velocity = (message & 0xFF0000) >> 8*2;
+
+                    MIDIMessageStruct newMessage {eventTime, note, status};
+                    midiMessages.append(newMessage);
+
+                }
+                if (status == 128 && channel == 0){
+                    // note off
+                    qint32 note = (message & 0x00FF00) >> 8;
+
+                    MIDIMessageStruct newMessage {eventTime, note, status};
+                    midiMessages.append(newMessage);
+                }
+            }
+        }
+    }
+
+    qDebug() << midiMessages.size() << " events read.";
+
+
+    // clear and fill midiNotesInfo
+    midiNotesInfo.clear();
+    for (qsizetype i = 0; i < midiMessages.size(); ++i) {
+        auto status = midiMessages.at(i).status;
+
+        if (status == 144){
+            // note on: search note off
+            auto noteOnTimeInSecs = midiMessages.at(i).eventTime/1000.0;
+            double noteDurationInSecs = 0;
+
+            float xPos = midiMessages.at(i).note - 60; // 60 being C3
+
+            for (qsizetype j = i; j < midiMessages.size(); ++j){
+                if (midiMessages.at(j).status == 128 && midiMessages.at(j).note == midiMessages.at(i).note){
+                    // note off
+                    noteDurationInSecs = midiMessages.at(j).eventTime/1000.0 - noteOnTimeInSecs;
+                    break;
+                }
+            }
+
+            float zScale = noteDurationInSecs / 2;
+            float zPos = noteOnTimeInSecs + noteDurationInSecs/2;
+
+            float xScale = 0.25;
+            if (utils::isBlackMidiNote(midiMessages.at(i).note)){
+                xScale *= 0.5;
+            }
+
+            // note, x, y, z, xScale, yScale, zScale
+            midiNotesInfo.append(midiMessages.at(i).note);
+            midiNotesInfo.append(-xPos*25);
+            midiNotesInfo.append(0);
+            midiNotesInfo.append(zPos*50);
+            midiNotesInfo.append(xScale);
+            midiNotesInfo.append(0.25);
+            midiNotesInfo.append(zScale);
+        }
+    }
 }

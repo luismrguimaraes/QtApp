@@ -8,14 +8,9 @@ qt6_add_qml_module(DesignerProjectContent
     URI "DesignerProjectContent"
     VERSION 1.0
     RESOURCE_PREFIX "/qt/qml"
-	QML_FILES
-		"WhiteNote.qml"
-		"Keyboard.qml"
-		"App.qml"
-		"BlackNote.qml"
-		"MidiNoteModel.qml"
-		"Screen01.ui.qml"
-                "keyboardScript.js"
+    QML_FILES
+        "App.qml"
+        "Screen01.ui.qml"
 )
 
 

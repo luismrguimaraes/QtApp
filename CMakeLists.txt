@@ -31,6 +31,10 @@ qt_standard_project_setup()
 qt_add_executable(${CMAKE_PROJECT_NAME}
     App/main.cpp
 )
+set_source_files_properties(qml/Creator.qml
+    PROPERTIES
+        QT_QML_SINGLETON_TYPE true
+)
 
 qt_add_resources(${CMAKE_PROJECT_NAME} "configuration"
     PREFIX "/"
@@ -46,9 +50,16 @@ qt_add_qml_module(${CMAKE_PROJECT_NAME}
         ./myinstancing.cpp ./myinstancing.h
         ./audiomidi.cpp ./audiomidi.h
         ./utils.h
-        ./keyinstancing.h ./keyinstancing.cpp
     IMPORTS
         QtQuick3D
+    QML_FILES
+        qml/BlackNote.qml
+        qml/Keyboard.qml
+        qml/MidiNote.qml
+        qml/WhiteNote.qml
+        qml/keyboardScript.js
+        qml/midiNotesScript.js
+        qml/MidiNotesInstancer.qml
 )
 
 include(qds)

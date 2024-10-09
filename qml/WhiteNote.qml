@@ -21,10 +21,17 @@ StaticRigidBody {
 
     onIsPressedChanged: {
         isPressed ? whiteNote.y = whiteNote.y -15 : whiteNote.y = whiteNote.y + 15
+
+        if (isPressed){
+            if (noteActive) console.log("OKAY")
+            else console.log("not okay")
+        }
     }
 
-    onEnteredTriggerBody: body => {if (body.note === whiteNote.note) noteActive = true}
-    onExitedTriggerBody:  body => {if (body.note === whiteNote.note) noteActive = false}
+    onEnteredTriggerBody: body => {if (body.note === whiteNote.note)
+                              noteActive = true}
+    onExitedTriggerBody:  body => {if (body.note === whiteNote.note)
+                              noteActive = false}
 
     Model {
                     id: whiteNoteModel

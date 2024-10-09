@@ -35,11 +35,11 @@ function createKeyboard() {
 
         var newObject
         if (isBlackMidiNote(note)){
-            newObject = blacknote.createObject(keyboard,
+            newObject = blacknote.createObject(sceneKeyboard,
                                                {x:xPosFinal, y: yPos, z:zPosFinal, scale: Qt.vector3d(xScale,1,zScale), note: note});
         }
         else{
-            newObject = whitenote.createObject(keyboard,
+            newObject = whitenote.createObject(sceneKeyboard,
                                                {x:xPosFinal, y: yPos, z:zPosFinal, scale: Qt.vector3d(xScale,1,zScale), note: note});
         }
 

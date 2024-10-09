@@ -21,6 +21,9 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
+    qRegisterMetaType<Audiomidi::MIDIMessageStruct>("MIDIMessageStruct");
+
+
     Audiomidi audioMidi;
     engine.rootContext()->setContextProperty("audioMidi", &audioMidi);
 

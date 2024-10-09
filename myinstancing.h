@@ -11,7 +11,19 @@ class MyInstancing : public QQuick3DInstancing
 public:
     explicit MyInstancing(QQuick3DObject *parent = nullptr);
     ~MyInstancing() override;
-    struct MIDIMessageStruct;
+    struct MIDIMessageStruct{
+        MIDIMessageStruct(qint64 eventTimeArg, qint32 noteArg, qint32 statusArg){
+            eventTime = eventTimeArg;
+            note = noteArg;
+            status = statusArg;
+        }
+        ~MIDIMessageStruct(){};
+
+        qint64 eventTime;
+        qint32 note;
+        qint32 status;
+    };
+
 protected:
     QByteArray getInstanceBuffer(int *instanceCount) override;
 private:
@@ -21,4 +33,4 @@ private:
     QList<MIDIMessageStruct> messages;
 
 };
-#endif // MYINSTANCING_H
+#endif // MYINSTANCING_Ha
