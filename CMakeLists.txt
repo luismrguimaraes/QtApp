@@ -20,7 +20,7 @@ add_subdirectory(libs/rtaudio/)
 add_subdirectory(libs/rtmidi/)
 add_subdirectory(libs/QMidi/)
 
-find_package(Qt6 6.7 REQUIRED COMPONENTS Core Gui Qml Quick Quick3D)
+find_package(Qt6 6.7 REQUIRED COMPONENTS Core Gui Qml Quick Quick3D Quick3DPhysics)
 find_package(RtAudio REQUIRED)
 set (RtMidi_DIR ${CMAKE_CURRENT_BINARY_DIR}/libs/rtmidi/)
 find_package(RtMidi REQUIRED)

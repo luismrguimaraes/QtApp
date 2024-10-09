@@ -11,6 +11,7 @@ import QtQuick.Controls 6.7
 import QtQuick3D 6.7
 import QtQuick3D.Effects 6.7
 import DesignerProject
+import QtQuick3D.Physics
 
 Rectangle {
     id: rectangle
@@ -23,7 +24,11 @@ Rectangle {
     layer.enabled: false
     clip: false
 
-    View3D {
+    PhysicsWorld{
+        scene: view3D.scene
+    }
+    View3D
+    {
         id: view3D
         anchors.fill: parent
         environment: sceneEnvironment
@@ -104,16 +109,15 @@ Rectangle {
                 materials: newMaterial
             }
 
-            /*
+
             MidiNoteModel {
-                id: midiNoteModel
+                id: midiNotes
                 x: 0
                 y: 50
                 visible: true
                 z: 0
-                materials: defaultMaterial
             }
-            */
+/*
             WhiteNote {
                 id: whiteNotes
                 visible: true
@@ -124,7 +128,10 @@ Rectangle {
                 id: blackNotes
                 materials: black
             }
-
+            */
+            Keyboard{
+                id: sceneKeyboard
+            }
         }
     }
 

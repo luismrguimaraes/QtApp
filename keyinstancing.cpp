@@ -1,7 +1,5 @@
 #include "keyinstancing.h"
 #include <QtQml/qqmlapplicationengine.h>
-#include <iostream>
-#include <ostream>
 
 KeyboardInstancing::KeyboardInstancing(){}
 
