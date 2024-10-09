@@ -4,6 +4,7 @@ import QtQuick3D.Physics
 import MyModule
 
 StaticRigidBody {
+    id: whiteNote
     collisionShapes: BoxShape {
         id : boxShape
 
@@ -13,14 +14,18 @@ StaticRigidBody {
     receiveTriggerReports: true
     sendTriggerReports: true
 
-    property bool isPressed: false
-    property int note: -1
+    property bool isPressed: audioMidi.pressedNotesList[note]
+    property int note
+
+    onIsPressedChanged: {
+        isPressed ? whiteNote.y = whiteNote.y -15 : whiteNote.y = whiteNote.y + 15
+    }
 
     Model {
-                    id: whiteNote
+                    id: whiteNoteModel
 
                     source: "#Cube"
-                    materials: white
+                    materials: isPressed ? defaultMaterial : white
                     Node {
                         id: __materialLibrary__
                     }
