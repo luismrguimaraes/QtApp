@@ -31,10 +31,6 @@ qt_standard_project_setup()
 qt_add_executable(${CMAKE_PROJECT_NAME}
     App/main.cpp
 )
-set_source_files_properties(qml/Creator.qml
-    PROPERTIES
-        QT_QML_SINGLETON_TYPE true
-)
 
 qt_add_resources(${CMAKE_PROJECT_NAME} "configuration"
     PREFIX "/"
@@ -60,6 +56,7 @@ qt_add_qml_module(${CMAKE_PROJECT_NAME}
         qml/keyboardScript.js
         qml/midiNotesScript.js
         qml/MidiNotesInstancer.qml
+        qml/Game.qml
 )
 
 include(qds)

@@ -4,40 +4,35 @@ import QtQuick3D.Physics
 import MyModule
 
 
-StaticRigidBody {
+TriggerBody {
     id: blackNote
     collisionShapes: BoxShape {
         id : boxShape
 
-        z: 100
-        scale.z: 0.5
+        extents: Qt.vector3d(20,100,10)
+        z: 50
     }
     receiveTriggerReports: true
     sendTriggerReports: true
 
     property bool isPressed: audioMidi.pressedNotesList[note]
-    property bool noteActive: false
+    property int collisionCount: 0
     property int note
 
     onIsPressedChanged: {
         isPressed ? blackNote.y = blackNote.y -15 : blackNote.y = blackNote.y + 15
-
-        if (isPressed){
-            if (noteActive) console.log("OKAY")
-            else console.log("not okay")
-        }
     }
 
-    onEnteredTriggerBody: body => {if (body.note === blackNote.note)
-                              noteActive = true}
-    onExitedTriggerBody:  body => {if (body.note === blackNote.note)
-                              noteActive = false}
+    onBodyEntered: body => {if (body.note === note)
+                        collisionCount++}
+    onBodyExited: body => {if (body.note === note)
+                        collisionCount--}
 
     Model {
                     id: blackNoteModel
 
                     source: "#Cube"
-                    materials: isPressed ? defaultMaterial : black
+                    materials: isPressed && collisionCount > 0 ? defaultMaterial : black
                     Node {
                         id: __materialLibrary__
                     }

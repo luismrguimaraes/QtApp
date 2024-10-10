@@ -5,26 +5,29 @@ import MyModule
 import "./keyboardScript.js" as KS
 
 
-TriggerBody{
-    id: midiNoteRigidbody
+StaticRigidBody {
+    id: midiNote
     collisionShapes: BoxShape {
         id: boxShape
     }
     receiveTriggerReports: true
     sendTriggerReports: true
 
-    Timer {
-        interval: 40; running: true; repeat: true
-        onTriggered: midiNoteRigidbody.z--
-    }
-
+    property bool isPressed: audioMidi.pressedNotesList[note]
+    property bool colliding : false
     property int note: -1
+
+    onEnteredTriggerBody: body => {
+                          if (body.note === note)
+                              colliding = true
+                          }
+    onExitedTriggerBody: destroy(20)
 
     Model {
             id: midiNoteModel
 
             source: "#Cube"
-            materials: KS.isBlackMidiNote(note) ? black : white
+            materials: isPressed && colliding ? defaultMaterial : KS.isBlackMidiNote(note) ? black : white
             Node {
                 id: __materialLibrary__
             }

@@ -306,7 +306,7 @@ void Audiomidi::readMidiData (QString path){
             midiNotesInfo.append(midiMessages.at(i).note);
             midiNotesInfo.append(-xPos*25);
             midiNotesInfo.append(0);
-            midiNotesInfo.append(zPos*50);
+            midiNotesInfo.append(zPos*50 -200);
             midiNotesInfo.append(xScale);
             midiNotesInfo.append(0.25);
             midiNotesInfo.append(zScale);

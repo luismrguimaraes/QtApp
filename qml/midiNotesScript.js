@@ -30,3 +30,9 @@ function createMidiNotes() {
         i += 7
     }
 }
+
+function moveNotes(){
+    for (var j in noteObjects) {
+        noteObjects[j].z--;
+    }
+}

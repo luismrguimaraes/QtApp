@@ -12,5 +12,9 @@ Node{
         MidiNotesScript.createMidiNotes()
     }
 
+    function moveNotes(){
+        MidiNotesScript.moveNotes()
+    }
+
     Component.onCompleted: readFile(":/test.mid")
 }

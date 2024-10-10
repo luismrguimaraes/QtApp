@@ -12,12 +12,13 @@ import QtQuick3D 6.7
 import QtQuick3D.Effects 6.7
 import DesignerProject
 import QtQuick3D.Physics
+
 import MyModule
 
 Rectangle {
     id: rectangle
-    width: 1920
-    height: 1080
+    width: 1600
+    height: 900
     opacity: 1
     visible: true
 
@@ -25,11 +26,10 @@ Rectangle {
     layer.enabled: false
     clip: false
 
-    PhysicsWorld{
+    PhysicsWorld {
         scene: view3D.scene
     }
-    View3D
-    {
+    View3D {
         id: view3D
         anchors.fill: parent
         environment: sceneEnvironment
@@ -111,27 +111,8 @@ Rectangle {
             }
 
 
-            MidiNotesInstancer {
-                id: sceneMidiNotesInstancer
-                x: 0
-                y: 50
-                visible: true
-                z: 0
-            }
-/*
-            WhiteNote {
-                id: whiteNotes
-                visible: true
-                materials: white
-            }
-
-            BlackNote {
-                id: blackNotes
-                materials: black
-            }
-            */
-            Keyboard{
-                id: sceneKeyboard
+            Game{
+                id: game
             }
         }
     }
@@ -143,13 +124,16 @@ Rectangle {
             emissiveFactor.y: 0.11
             emissiveFactor.z: 0.19
             metalness: 0
-            baseColor: "#59ffeb"
+            baseColor: "#61ff59"
             objectName: "Default Material"
         }
 
         PrincipledMaterial {
             id: newMaterial
-            baseColor: "#524e16"
+            roughness: 0.8
+            transmissionFactor: 0
+            clearcoatAmount: 0
+            baseColor: "#3b3a0f"
             objectName: "New Material"
         }
 
@@ -170,7 +154,8 @@ Rectangle {
         }
     }
 
-    Text{
+    // Camera Params
+    Text {
         id: camParamsText
         text: qsTr("Camera Parameters")
         font.pixelSize: 30
@@ -186,7 +171,7 @@ Rectangle {
         stepSize: 1
         onValueChanged: sceneCamera.y = value
         anchors.top: camParamsText.bottom
-        Label{
+        Label {
             anchors.left: sceneCameraYSlider.right
             text: qsTr("Y")
             font.pixelSize: 30
@@ -202,7 +187,7 @@ Rectangle {
         stepSize: 1
         onValueChanged: sceneCamera.eulerRotation.x = value
         anchors.top: sceneCameraYSlider.bottom
-        Label{
+        Label {
             anchors.left: sceneCameraXRotSlider.right
             text: qsTr("XRot")
             font.pixelSize: 30
@@ -218,13 +203,15 @@ Rectangle {
         stepSize: 1
         onValueChanged: sceneCamera.z = value
         anchors.top: sceneCameraXRotSlider.bottom
-        Label{
+        Label {
             anchors.left: sceneCameraZSlider.right
             text: qsTr("Z")
             font.pixelSize: 30
             color: "white"
         }
     }
+
+    // Game stuff
     TextField {
         id: textField
         placeholderText: qsTr("path")
@@ -232,18 +219,52 @@ Rectangle {
         anchors.right: rectangle.right
     }
     Button{
+        id: spawnButton
         anchors.top: textField.bottom
         anchors.right: rectangle.right
         text: qsTr("Spawn")
-        onClicked: sceneMidiNotesInstancer.readFile(":/" + textField.text)
+        onClicked: game.readFile(":/" + textField.text)
+    }
+    Button{
+        id: startStopButton
+        anchors.top: spawnButton.bottom
+        anchors.right: rectangle.right
+        text: qsTr("Start/Stop")
+        onClicked: game.startStop()
+    }
+    Label {
+        id: scoreLabel
+        width: rectangle.width
+        property real score: game.score
+        horizontalAlignment: Text.AlignHCenter
+        text: score.toFixed(2)
+        font.pointSize: 50
+        color: "white"
+    }
+    Label {
+        id: gameSpeedSliderLabel
+        anchors.top: sceneCameraZSlider.bottom
+        text: qsTr("Game interval/speed")
+        font.pixelSize: 30
+        color: "white"
+    }
+    Slider {
+        id: gameSpeedSlider
+        value: game.interval
+        live: true
+        to: 1
+        from: 50
+        stepSize: 1
+        onValueChanged: game.interval = value
+        anchors.top: gameSpeedSliderLabel.bottom
+
     }
 }
 
 /*##^##
 Designer {
-    D{i:0;matPrevEnvDoc:"SkyBox";matPrevEnvValueDoc:"preview_studio"}D{i:1;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}
-D{i:2;invisible:true}D{i:3;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}D{i:10;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}
-D{i:11;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}
+    D{i:0;matPrevEnvDoc:"SkyBox";matPrevEnvValueDoc:"preview_studio";matPrevModelDoc:"#Sphere"}
+D{i:4;cameraSpeed3d:25;cameraSpeed3dMultiplier:1}
 }
 ##^##*/
 

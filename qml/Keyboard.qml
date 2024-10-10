@@ -6,5 +6,9 @@ import "keyboardScript.js" as KeyboardScript
 Node {
     id: keyboard
 
+    function getKeyObjects(){
+        return KeyboardScript.objects
+    }
+
     Component.onCompleted: KeyboardScript.createKeyboard()
 }
