@@ -121,8 +121,8 @@ Rectangle {
         id: __materialLibrary__
         PrincipledMaterial {
             id: defaultMaterial
-            emissiveFactor.y: 0.11
-            emissiveFactor.z: 0.19
+            //emissiveFactor.y: 0.11
+            //emissiveFactor.z: 0.19
             metalness: 0
             baseColor: "#61ff59"
             objectName: "Default Material"
@@ -135,6 +135,15 @@ Rectangle {
             clearcoatAmount: 0
             baseColor: "#3b3a0f"
             objectName: "New Material"
+        }
+
+        PrincipledMaterial {
+            id: red
+            //emissiveFactor.y: 0.11
+            //emissiveFactor.z: 0.19
+            metalness: 0
+            baseColor: "#ff6159"
+            objectName: "Red"
         }
 
         PrincipledMaterial {

@@ -27,7 +27,11 @@ StaticRigidBody {
             id: midiNoteModel
 
             source: "#Cube"
-            materials: isPressed && colliding ? defaultMaterial : KS.isBlackMidiNote(note) ? black : white
+            materials: colliding ?
+                           isPressed ?
+                               defaultMaterial : red
+                        : KS.isBlackMidiNote(note) ?
+                               black : white
             Node {
                 id: __materialLibrary__
             }

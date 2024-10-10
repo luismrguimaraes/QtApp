@@ -20,7 +20,7 @@ TriggerBody {
     property int note
 
     onIsPressedChanged: {
-        isPressed ? blackNote.y = blackNote.y -15 : blackNote.y = blackNote.y + 15
+        isPressed ? blackNote.y = blackNote.y -20 : blackNote.y = blackNote.y + 20
     }
 
     onBodyEntered: body => {if (body.note === note)
