@@ -5,7 +5,7 @@ Node {
     id: game
 
     property real score: 0
-    property real interval: 20
+    property real interval: 30
 
     Timer {
         id: clock
@@ -40,7 +40,7 @@ Node {
     MidiNotesInstancer {
         id: sceneMidiNotesInstancer
         x: 0
-        y: 50
+        y: 100
         visible: true
         z: 0
     }

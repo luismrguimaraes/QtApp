@@ -43,7 +43,6 @@ qt_add_qml_module(${CMAKE_PROJECT_NAME}
     VERSION 1.0
     RESOURCE_PREFIX "/qt/qml"
     SOURCES
-        ./myinstancing.cpp ./myinstancing.h
         ./audiomidi.cpp ./audiomidi.h
         ./utils.h
     IMPORTS
@@ -57,6 +56,7 @@ qt_add_qml_module(${CMAKE_PROJECT_NAME}
         qml/midiNotesScript.js
         qml/MidiNotesInstancer.qml
         qml/Game.qml
+        qml/KeyExtension.qml
 )
 
 include(qds)

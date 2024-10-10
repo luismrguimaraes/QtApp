@@ -33,8 +33,5 @@ TriggerBody{
 
                     source: "#Cube"
                     materials: isPressed && collisionCount > 0 ? defaultMaterial : white
-                    Node {
-                        id: __materialLibrary__
-                    }
                 }
 }

@@ -32,9 +32,6 @@ StaticRigidBody {
                                defaultMaterial : red
                         : KS.isBlackMidiNote(note) ?
                                black : white
-            Node {
-                id: __materialLibrary__
-            }
         }
 }
 

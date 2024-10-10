@@ -1,6 +1,9 @@
 var blacknote
 var whitenote
+var noteExt
 const objects = []
+const noteExtObjects = []
+
 
 function isBlackMidiNote(note) {
     // Black notes in an octave (C#=1, D#=3, F#=6, G#=8, A#=10)
@@ -13,7 +16,7 @@ function isBlackMidiNote(note) {
 function createKeyboard() {
     blacknote = Qt.createComponent("BlackNote.qml");
     whitenote = Qt.createComponent("WhiteNote.qml");
-
+    noteExt = Qt.createComponent("KeyExtension.qml");
 
     for (var note = 0 ; note <= 127; note++){
         var xPos = note - 60;
@@ -34,13 +37,20 @@ function createKeyboard() {
         var zPosFinal = zPos -500
 
         var newObject
+        var newNoteExt
         if (isBlackMidiNote(note)){
             newObject = blacknote.createObject(sceneKeyboard,
                                                {x:xPosFinal, y: yPos, z:zPosFinal, scale: Qt.vector3d(xScale,1,zScale), note: note});
+            newNoteExt = noteExt.createObject(sceneKeyboard,
+                                              {x:xPosFinal, scale: Qt.vector3d(xScale*0.6,1,100), note: note});
+
         }
         else{
             newObject = whitenote.createObject(sceneKeyboard,
                                                {x:xPosFinal, y: yPos, z:zPosFinal, scale: Qt.vector3d(xScale,1,zScale), note: note});
+            newNoteExt = noteExt.createObject(sceneKeyboard,
+                                              {x:xPosFinal, scale: Qt.vector3d(xScale*0.6,1,100), note: note});
+
         }
 
         if (newObject === null) {
@@ -50,8 +60,6 @@ function createKeyboard() {
         }
 
         objects.push(newObject);
-
-
+        noteExtObjects.push(newNoteExt)
     }
-
 }

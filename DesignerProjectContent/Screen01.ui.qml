@@ -64,40 +64,21 @@ Rectangle {
                 z: 0
             }
 
-            PointLight {
-                id: pointLight
-                x: -0
-                y: 900
-                visible: false
-                brightness: 100
-                castsShadow: true
-                z: -600
-            }
-
             PerspectiveCamera {
                 id: sceneCamera
                 x: -0
-                y: 1500
+                y: 5000
                 visible: true
                 fieldOfViewOrientation: PerspectiveCamera.Horizontal
                 pivot.x: 0
                 pivot.z: 0
                 pivot.y: 0
-                fieldOfView: 60
+                fieldOfView: 10
                 clipFar: 10000
-                eulerRotation.x: -85
+                eulerRotation.x: -93
                 eulerRotation.z: 0
                 eulerRotation.y: 180
-                z: -300
-            }
-
-            OrthographicCamera {
-                id: orthographicCamera
-                y: 1500
-                visible: true
-                eulerRotation.x: -55
-                eulerRotation.y: 180
-                z: -1000
+                z: -400
             }
 
             Model {
@@ -155,9 +136,27 @@ Rectangle {
         }
 
         PrincipledMaterial {
+            id: white2
+            baseColor: "#ffe6b5"
+            roughness: 0.4
+            metalness: 0.1
+            opacity: 0.2
+            objectName: "White"
+        }
+
+        PrincipledMaterial {
             id: black
             baseColor: "#322e27"
             roughness: 0.4
+            objectName: "Black"
+            metalness: 0.1
+        }
+
+        PrincipledMaterial {
+            id: black2
+            baseColor: "#606060"
+            roughness: 0.4
+            opacity: 0.8
             objectName: "Black"
             metalness: 0.1
         }
@@ -175,7 +174,7 @@ Rectangle {
         id: sceneCameraYSlider
         value: sceneCamera.y
         live: true
-        to: 4000
+        to: 10000
         from: 1
         stepSize: 1
         onValueChanged: sceneCamera.y = value
@@ -207,7 +206,7 @@ Rectangle {
         id: sceneCameraZSlider
         value: sceneCamera.z
         live: true
-        to: -500
+        to: -1000
         from: -100
         stepSize: 1
         onValueChanged: sceneCamera.z = value
@@ -253,7 +252,7 @@ Rectangle {
     Label {
         id: gameSpeedSliderLabel
         anchors.top: sceneCameraZSlider.bottom
-        text: qsTr("Game interval/speed")
+        text: qsTr("Game Speed")
         font.pixelSize: 30
         color: "white"
     }
