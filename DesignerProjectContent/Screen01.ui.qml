@@ -17,8 +17,8 @@ import MyModule
 
 Rectangle {
     id: rectangle
-    width: 1600
-    height: 900
+    width: 1280
+    height: 720
     opacity: 1
     visible: true
 
@@ -67,7 +67,7 @@ Rectangle {
             PerspectiveCamera {
                 id: sceneCamera
                 x: -0
-                y: 5000
+                y: 6000
                 visible: true
                 fieldOfViewOrientation: PerspectiveCamera.Horizontal
                 pivot.x: 0
@@ -78,7 +78,7 @@ Rectangle {
                 eulerRotation.x: -93
                 eulerRotation.z: 0
                 eulerRotation.y: 180
-                z: -400
+                z: -10
             }
 
             Model {
@@ -206,14 +206,30 @@ Rectangle {
         id: sceneCameraZSlider
         value: sceneCamera.z
         live: true
-        to: -1000
-        from: -100
+        to: 500
+        from: -1000
         stepSize: 1
         onValueChanged: sceneCamera.z = value
         anchors.top: sceneCameraXRotSlider.bottom
         Label {
             anchors.left: sceneCameraZSlider.right
             text: qsTr("Z")
+            font.pixelSize: 30
+            color: "white"
+        }
+    }
+    Slider {
+        id: sceneCameraFOV
+        value: sceneCamera.fieldOfView
+        live: true
+        to: 0
+        from: 100
+        stepSize: 1
+        onValueChanged: sceneCamera.fieldOfView = value
+        anchors.top: sceneCameraZSlider.bottom
+        Label {
+            anchors.left: sceneCameraFOV.right
+            text: qsTr("FOV")
             font.pixelSize: 30
             color: "white"
         }
@@ -231,7 +247,7 @@ Rectangle {
         anchors.top: textField.bottom
         anchors.right: rectangle.right
         text: qsTr("Spawn")
-        onClicked: game.readFile(":/" + textField.text)
+        onClicked: game.readFile(":/midi/" + textField.text)
     }
     Button{
         id: startStopButton
@@ -251,7 +267,7 @@ Rectangle {
     }
     Label {
         id: gameSpeedSliderLabel
-        anchors.top: sceneCameraZSlider.bottom
+        anchors.top: sceneCameraFOV.bottom
         text: qsTr("Game Speed")
         font.pixelSize: 30
         color: "white"

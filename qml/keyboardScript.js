@@ -23,7 +23,7 @@ function createKeyboard() {
 
         var zScale = 0.5;
         var zPos = -25;
-        var yPos = 100;
+        var yPos = 110;
         var xScale = 0.25;
 
         if (!isBlackMidiNote(note)){
@@ -42,14 +42,14 @@ function createKeyboard() {
             newObject = blacknote.createObject(sceneKeyboard,
                                                {x:xPosFinal, y: yPos, z:zPosFinal, scale: Qt.vector3d(xScale,1,zScale), note: note});
             newNoteExt = noteExt.createObject(sceneKeyboard,
-                                              {x:xPosFinal, scale: Qt.vector3d(xScale*0.6,1,100), note: note});
+                                              {x:xPosFinal, scale: Qt.vector3d(xScale*0.7,1,100), note: note});
 
         }
         else{
             newObject = whitenote.createObject(sceneKeyboard,
                                                {x:xPosFinal, y: yPos, z:zPosFinal, scale: Qt.vector3d(xScale,1,zScale), note: note});
             newNoteExt = noteExt.createObject(sceneKeyboard,
-                                              {x:xPosFinal, scale: Qt.vector3d(xScale*0.6,1,100), note: note});
+                                              {x:xPosFinal, scale: Qt.vector3d(xScale*0.5,1,100), note: note});
 
         }
 

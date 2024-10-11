@@ -13,6 +13,9 @@ Node {
 
     y: 100
 
+    onIsPressedChanged: {
+        isPressed ? noteExtension.scale.x = noteExtension.scale.x *= 0.75 : noteExtension.scale.x /= 0.75
+    }
 
     Model {
             id: noteExtensionModel

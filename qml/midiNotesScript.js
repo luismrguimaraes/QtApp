@@ -5,10 +5,12 @@ function createMidiNotes() {
     // clear noteObjects
     console.log(noteObjects.length + " objects to destroy")
     for (var j in noteObjects) {
-        if (typeof noteObjects[j] === 'undefined')
-            continue
-
-        noteObjects[j].destroy();
+        try{
+            noteObjects[j].destroy();
+        }
+        catch (e){
+            continue;
+        }
     }
     noteObjects.length = 0;
 

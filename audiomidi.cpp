@@ -14,7 +14,7 @@
 
 int SAMPLE_RATE = 48000;
 int N_CHANNELS = 2;
-auto AUDIO_PRIORITY = QThread::HighestPriority;
+auto AUDIO_PRIORITY = QThread::TimeCriticalPriority;
 
 
 std::map<QThread *, std::pair<std::atomic<bool>, std::atomic<double>>> relTimeDic;

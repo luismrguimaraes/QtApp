@@ -34,6 +34,7 @@ Node {
     }
 
     function readFile(path){
+        score = 0
         sceneMidiNotesInstancer.readFile(path)
     }
 

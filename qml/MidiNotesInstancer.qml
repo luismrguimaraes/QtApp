@@ -16,5 +16,5 @@ Node{
         MidiNotesScript.moveNotes()
     }
 
-    Component.onCompleted: readFile(":/test.mid")
+    Component.onCompleted: readFile(":/midi/test.mid")
 }

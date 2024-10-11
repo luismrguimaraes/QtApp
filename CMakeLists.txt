@@ -35,8 +35,13 @@ qt_add_executable(${CMAKE_PROJECT_NAME}
 qt_add_resources(${CMAKE_PROJECT_NAME} "configuration"
     PREFIX "/"
     FILES
-        test.mid
         qtquickcontrols2.conf)
+
+qt_add_resources(${CMAKE_PROJECT_NAME}
+    PREFIX "/"
+    FILES
+        midi/)
+
 
 qt_add_qml_module(${CMAKE_PROJECT_NAME}
     URI MyModule
