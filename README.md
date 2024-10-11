@@ -9,3 +9,6 @@ Load a MIDI file and play the notes at the right timing to get points. If you pl
 - MIDI files to load should be placed in the [midi/](./midi/) folder, and can loaded through the UI.
 
 # Demo
+
+https://github.com/user-attachments/assets/ed791f50-30e6-4774-9df6-934d734bae07
+
