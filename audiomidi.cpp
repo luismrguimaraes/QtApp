@@ -14,7 +14,7 @@
 
 int SAMPLE_RATE = 48000;
 int N_CHANNELS = 2;
-auto AUDIO_PRIORITY = QThread::TimeCriticalPriority;
+auto AUDIO_PRIORITY = QThread::HighestPriority;
 
 
 std::map<QThread *, std::pair<std::atomic<bool>, std::atomic<double>>> relTimeDic;
@@ -36,7 +36,7 @@ int sine( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
     UserData *userData = (UserData *) userDataArg;
     double freq = userData->freq;
 
-    double amp = 0.5;
+    double amp = 0.2;
     double a = 0.005;
     double h = 0;
     double r = 0.3;
@@ -100,6 +100,9 @@ int audioFun(const double freq)
     UserData data{};
     data.freq = freq;
     data.thread = QThread::currentThread();
+
+    //RtAudio::StreamOptions options;
+    //options.flags = RTAUDIO_SCHEDULE_REALTIME;
 
     if ( dac.openStream( &parameters, NULL, RTAUDIO_FLOAT64, sampleRate,
                        &bufferFrames, &sine, (void *)&data ) ) {
