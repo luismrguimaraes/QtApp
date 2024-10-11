@@ -42,6 +42,7 @@ public:
 public slots:
     void debug();
     void readMidiData (QString filename);
+    void allNotesOff();
 signals:
     void pressedNotesListChanged();
     void midiNotesInfoChanged();

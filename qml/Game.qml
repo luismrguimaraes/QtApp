@@ -35,6 +35,13 @@ Node {
 
     function readFile(path){
         score = 0
+        clock.running = false
+
+        // reset collisionCount
+        for (var key of sceneKeyboard.getKeyObjects()){
+            key.collisionCount = 0
+        }
+
         sceneMidiNotesInstancer.readFile(path)
     }
 

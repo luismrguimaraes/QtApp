@@ -36,7 +36,7 @@ int sine( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
     UserData *userData = (UserData *) userDataArg;
     double freq = userData->freq;
 
-    double amp = 0.2;
+    double amp = 0.3;
     double a = 0.005;
     double h = 0;
     double r = 0.3;
@@ -135,6 +135,22 @@ cleanup:
 bool done;
 static void finish(int ignore){ done = true; }
 
+void inline noteOff(int note, QList<bool> * pressedNotesList, Audiomidi * audioMidiObject){
+    auto n = note;
+    QThread* thread = noteThreadDic.find(n)->second;
+
+    auto currentTimeSec = QTime::currentTime().msec()/1000.0 + QTime::currentTime().second();
+    auto relStartTime = currentTimeSec - relTimeDic.find(thread)->second.second.load();
+
+    relTimeDic.find(thread)->second.first.store(true);
+    relTimeDic.find(thread)->second.second.store(relStartTime);
+
+    noteThreadDic.erase(n);
+
+    pressedNotesList->replace(n, false);
+    emit audioMidiObject->pressedNotesListChanged();
+}
+
 int midiFun (QThread * audioThread, QList<bool> * pressedNotesList, Audiomidi * audioMidiObject){
 
     RtMidiIn *midiin = new RtMidiIn();
@@ -179,19 +195,7 @@ int midiFun (QThread * audioThread, QList<bool> * pressedNotesList, Audiomidi * 
             }
             else if ( (int)message[0] == 128 ){
                 // Note Off
-                auto n = (int)message[1];
-                QThread* thread = noteThreadDic.find(n)->second;
-
-                auto currentTimeSec = QTime::currentTime().msec()/1000.0 + QTime::currentTime().second();
-                auto relStartTime = currentTimeSec - relTimeDic.find(thread)->second.second.load();
-
-                relTimeDic.find(thread)->second.first.store(true);
-                relTimeDic.find(thread)->second.second.store(relStartTime);
-
-                noteThreadDic.erase(n);
-
-                pressedNotesList->replace(n, false);
-                emit audioMidiObject->pressedNotesListChanged();
+                noteOff((int)message[1], pressedNotesList, audioMidiObject);
             }
         }
 
@@ -316,3 +320,16 @@ void Audiomidi::readMidiData (QString path){
         }
     }
 }
+
+void Audiomidi::allNotesOff(){
+    return; // not working
+
+    for (int n = 0; n<=127; ++n){
+        if (noteThreadDic.find(n)->second)
+            noteOff(n, &pressedNotesList, this);
+        else
+            qDebug() << n << " not playing";
+    }
+}
+
+
