@@ -2,3 +2,5 @@
 *.autosave
 
 .vscode/
+
+build/
