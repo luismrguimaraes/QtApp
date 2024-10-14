@@ -69,10 +69,10 @@ int sine( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
             else if (t <= a + h || !isNoteReleased)
                 userData->channelData[j] = amp * std::sin(2 * M_PI * freq * t); // hold/sustain
             else if (isNoteReleased && t <= relStartTime + r){
-                userData->channelData[j] = amp * std::sin(2 * M_PI * freq * t) * ((relStartTime - t) / r + 1); // 1 when t == a + h, 0 when t == a + h + r
+                userData->channelData[j] = amp * std::sin(2 * M_PI * freq * t) * ((relStartTime - t) / r + 1);
             }
             else{
-                userData->channelData[j] = 0;  // 0 when t > a + t + r
+                userData->channelData[j] = 0;
                 userData->isReleased = true;
             }
         }
